@@ -31,7 +31,7 @@ function Shell() {
           </p>
         )}
         {tab === 'today' && <TodayPage today={today} />}
-        {tab === 'calendar' && <CalendarPage />}
+        {tab === 'calendar' && <CalendarPage today={today} />}
         {tab === 'memo' && <MemoPage />}
       </main>
       <UndoToast />

@@ -8,9 +8,9 @@ import { KindPicker } from './KindPicker'
 import { PlusIcon } from './Icons'
 
 const PLACEHOLDER: Record<ItemKind, string> = {
-  todo: '할 일을 입력하고 엔터',
-  event: '일정을 입력하고 엔터',
-  memo: '메모를 입력하고 엔터',
+  todo: '할 일 입력 후 엔터',
+  event: '일정 입력',
+  memo: '메모 입력 후 엔터',
 }
 
 export function QuickInput({ date, autoFocus }: { date: string; autoFocus?: boolean }) {
@@ -53,7 +53,7 @@ export function QuickInput({ date, autoFocus }: { date: string; autoFocus?: bool
             value={time}
             onChange={(e) => setTime(e.target.value)}
             aria-label="일정 시간"
-            className="h-14 w-32 shrink-0 rounded-2xl border-2 border-gray-200 bg-white px-2 text-lg outline-none focus:border-blue-600 dark:border-gray-700 dark:bg-gray-900"
+            className="h-14 w-32 shrink-0 rounded-2xl border-2 border-gray-200 bg-white px-2 text-base outline-none focus:border-blue-600 dark:border-gray-700 dark:bg-gray-900"
           />
         )}
         <input

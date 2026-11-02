@@ -40,3 +40,12 @@ export function nextHourStr(): string {
 }
 
 export { WEEKDAYS }
+
+/** 달력에 그릴 42칸(6주)의 날짜들. 앞뒤 달 날짜도 채워서 모양을 맞춰요. */
+export function monthGrid(year: number, month: number): string[] {
+  const first = new Date(year, month, 1)
+  const start = new Date(year, month, 1 - first.getDay()) // 그 주 일요일부터
+  return Array.from({ length: 42 }, (_, i) =>
+    toDateStr(new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)),
+  )
+}
