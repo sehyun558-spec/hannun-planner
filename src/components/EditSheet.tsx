@@ -4,8 +4,9 @@ import type { FormEvent } from 'react'
 import type { Item, Repeat } from '../types'
 import { KindPicker } from './KindPicker'
 import { StarIcon } from './Icons'
-import { fromDateStr, formatShortDate, WEEKDAYS } from '../utils/date'
-import { useDragToClose, SHEET_ANIM_MS } from '../hooks/useDragToClose'
+import { fromDateStr, formatKoreanTime, formatShortDate, WEEKDAYS } from '../utils/date'
+import { useDragToClose } from '../hooks/useDragToClose'
+import { PickerField } from './PickerField'
 
 /** '매주 월요일마다', '매달 2일에', '11월 2일부터 매일' */
 function repeatHint(repeat: Repeat, date: string): string {
@@ -24,6 +25,11 @@ interface Props {
   onClose: () => void
 }
 
+/** '11월 2일 (월)' (올해가 아니면 '2027년 1월 1일 (금)') */
+function dateLabel(date: string): string {
+  return `${formatShortDate(date)} (${WEEKDAYS[fromDateStr(date).getDay()]})`
+}
+
 const REPEATS: { value: Repeat; label: string }[] = [
   { value: 'none', label: '안 함' },
   { value: 'daily', label: '매일' },
@@ -40,7 +46,8 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
 
   // 손가락으로 아래로 끌어내리면 닫혀요
   const sheetRef = useRef<HTMLFormElement>(null)
-  const { dy, dragging, closing, close } = useDragToClose(sheetRef, onClose)
+  const backdropRef = useRef<HTMLButtonElement>(null)
+  const { close } = useDragToClose(sheetRef, backdropRef, onClose)
 
   // 뒤로가기 키(ESC)로 닫기
   useEffect(() => {
@@ -75,27 +82,20 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
       aria-label={isNew ? '새로 만들기' : '수정하기'}
     >
       <button
+        ref={backdropRef}
         type="button"
         aria-label="닫기"
         onClick={close}
         className="fadein absolute inset-0 bg-ink/25"
-        style={{
-          opacity: closing ? 0 : Math.max(0, 1 - dy / 400),
-          transition: dragging ? 'none' : `opacity ${SHEET_ANIM_MS}ms ease-out`,
-        }}
       />
       <form
         ref={sheetRef}
         onSubmit={submit}
-        className="sheetup relative max-h-[92dvh] w-full max-w-md space-y-5 overflow-y-auto overscroll-contain rounded-t-2xl border-t border-line bg-paper px-5"
-        style={{
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)',
-          transform: closing ? 'translateY(100%)' : `translateY(${dy}px)`,
-          transition: dragging ? 'none' : `transform ${SHEET_ANIM_MS}ms ease-out`,
-        }}
+        className="sheetup relative max-h-[92dvh] w-full max-w-md space-y-5 overflow-y-auto overscroll-contain rounded-t-2xl border-t border-line bg-paper px-5 will-change-transform"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)' }}
       >
         {/* 손잡이: 여기를 잡고 아래로 내리면 닫혀요 */}
-        <div className="-mx-5 flex h-7 cursor-grab items-center justify-center" aria-hidden>
+        <div className="-mx-5 flex h-7 cursor-grab touch-none items-center justify-center" aria-hidden>
           <div className="h-1 w-9 rounded-full bg-muted/40" />
         </div>
 
@@ -127,32 +127,38 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
         </label>
 
         <div className="flex gap-2">
-          <label className="block min-w-0 flex-1">
+          <div className="min-w-0 flex-1">
             <span className={label}>날짜</span>
-            <input
+            <PickerField
               type="date"
+              label="날짜"
               value={draft.date}
-              onChange={(e) => e.target.value && set({ date: e.target.value })}
-              className={field}
+              onChange={(v) => v && set({ date: v })}
+              display={dateLabel(draft.date)}
             />
-          </label>
+          </div>
           {draft.kind !== 'memo' && (
-            <label className="block w-40 shrink-0">
+            <div className="w-[42%] shrink-0">
               <span className={`${label} flex justify-between`}>
                 시간
                 {draft.time && (
-                  <button type="button" onClick={() => set({ time: null })} className="text-ink underline underline-offset-2">
+                  <button
+                    type="button"
+                    onClick={() => set({ time: null })}
+                    className="-my-3 -mr-1 px-1 py-3 text-ink underline underline-offset-2"
+                  >
                     지우기
                   </button>
                 )}
               </span>
-              <input
+              <PickerField
                 type="time"
+                label="시간"
                 value={draft.time ?? ''}
-                onChange={(e) => set({ time: e.target.value || null })}
-                className={field}
+                onChange={(v) => set({ time: v || null })}
+                display={draft.time ? formatKoreanTime(draft.time) : '시간 없음'}
               />
-            </label>
+            </div>
           )}
         </div>
 

@@ -3,9 +3,10 @@ import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { ItemKind } from '../types'
 import { useItems } from '../store/ItemsContext'
-import { nextHourStr } from '../utils/date'
+import { formatKoreanTime, nextHourStr } from '../utils/date'
 import { KindPicker } from './KindPicker'
 import { PlusIcon } from './Icons'
+import { PickerField } from './PickerField'
 
 const PLACEHOLDER: Record<ItemKind, string> = {
   todo: '할 일 입력 후 엔터',
@@ -44,12 +45,13 @@ export function QuickInput({ date, autoFocus }: { date: string; autoFocus?: bool
     <form onSubmit={submit} className="space-y-3">
       <div className="flex gap-2">
         {kind === 'event' && (
-          <input
+          <PickerField
             type="time"
+            label="일정 시간"
             value={time}
-            onChange={(e) => setTime(e.target.value)}
-            aria-label="일정 시간"
-            className={`${field} w-32 shrink-0 px-2`}
+            onChange={setTime}
+            display={time ? formatKoreanTime(time) : '시간'}
+            className="w-32 shrink-0"
           />
         )}
         <input

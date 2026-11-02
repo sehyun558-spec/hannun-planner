@@ -77,7 +77,7 @@ body {
   color: var(--muted);
 }
 
-/* 아이폰(사파리)에서 날짜·시간 칸이 정해진 너비보다 넓어져 화면 밖으로 넘치지 않게 */
+/* 날짜·시간 칸은 PickerField 안에서 보이지 않게 겹쳐 쓰여요. 혹시라도 넓어져 넘치지 않게 */
 input[type='date'],
 input[type='time'] {
   -webkit-appearance: none;

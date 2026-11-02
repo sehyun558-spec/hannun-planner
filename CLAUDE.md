@@ -50,7 +50,8 @@
 - 애니메이션 0.2~0.4초, `prefers-reduced-motion`이면 끔
 - 특색: 오늘의 한 가지(별 붙인 오늘 할 일 중 첫 번째), 원형 진행 표시 + "오늘도 잘 해냈어요", 체크 펜 긋기·줄 긋기(`.check-path`, `.strike`), 짧은 진동(`haptic`), 다정한 빈 화면 문구
 - 수정 창(EditSheet)은 아래로 끌어내리면 닫힘(`useDragToClose`: 120px 이상 또는 손 뗄 때 빠르면 닫기, 내용이 스크롤된 상태면 스크롤 우선)
-- 아이폰 날짜·시간 칸 넘침 방지 CSS가 index.css 에 있음 (`appearance: none; min-width: 0`)
+  - 부드럽게 하려고 끄는 동안 React 상태를 바꾸지 않고 style.transform 을 직접 바꿈(requestAnimationFrame). 곡선 cubic-bezier(0.32,0.72,0,1), 0.3초
+- 날짜·시간 칸은 `PickerField`: 글자는 직접 그리고(가운데 정렬) 그 위에 투명한 진짜 date/time 입력칸을 겹침 — 아이폰 기본 칸은 글자가 위로 붙거나 넘침
 - 다크 모드: 지금은 숨김(사용자 결정). 다시 켜려면 index.css 에 어두운 색상표 추가 → App 의 `useTheme('light')` 를 `settings.theme` 로 → 설정에 화면 모드 다시 보이기
 
 ## 작업 방식 (꼭 지킬 것)
