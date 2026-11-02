@@ -1,54 +1,157 @@
-# React + TypeScript + Vite
+# 한눈 플래너
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> 일정, 할 일, 메모를 한 화면에서 5초 만에 입력하고 한눈에 보는,
+> **광고 없고 내 폰에만 저장되는** 플래너
 
-Currently, two official plugins are available:
+- 가입·로그인 없음. 켜자마자 입력창이 나와요.
+- 입력한 내용은 **이 기기 브라우저 안에만** 저장되고, 어떤 서버로도 보내지지 않아요.
+- 홈 화면에 설치할 수 있고, **인터넷이 없어도** 열려요.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 주요 기능
 
-## Expanding the ESLint configuration
+| 화면 | 할 수 있는 것 |
+|---|---|
+| **오늘** | 빠른 입력(엔터로 추가), 할 일/일정/메모 고르기, 시간순 한 목록, ○ 눌러 완료, 옆으로 밀어 삭제(3초 되돌리기), 눌러서 수정, ☆ 중요(맨 위 고정) |
+| **달력** | 월간 달력, 항목 있는 날에 점, 날짜 누르면 그날 목록과 바로 추가, 옆으로 밀어 달 넘기기 |
+| **메모** | 제목+내용 메모, 메모 검색, 오른쪽 아래 + 버튼으로 새 메모 |
+| 🔍 통합 검색 | 오늘 화면 오른쪽 위. 일정·할 일·메모를 한 번에 찾기 |
+| ⚙️ 설정 | 화면 모드(시스템/밝게/어둡게), 일정 시간 알림, 백업 저장·불러오기 |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+반복(매일/매주/매월)은 항목을 눌러 수정 창에서 고를 수 있어요.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+
+## 1. 실행 방법 (컴퓨터에서)
+
+### 처음 한 번만
+1. [Node.js](https://nodejs.org/ko) 웹사이트에서 **LTS 버전**을 내려받아 설치해요.
+2. 이 프로젝트 폴더에서 터미널(맥: 터미널, 윈도우: PowerShell)을 열고 아래 명령을 입력해요. 필요한 도구를 내려받는 단계예요.
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 개발용으로 켜기
+```bash
+npm run dev
+```
+화면에 나오는 `http://localhost:5173` 주소를 브라우저에서 열면 돼요.
+코드를 고치면 화면이 바로 바뀌어요. 끌 때는 터미널에서 `Ctrl + C`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 공개용 파일 만들기
+```bash
+npm run build
+```
+`dist` 폴더에 공개용 파일이 만들어져요. 오프라인 기능까지 미리 확인하려면 아래 명령 후 `http://localhost:4173`을 열어요.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```bash
+npm run preview
+```
+
+### 명령어 한눈에 보기
+
+| 명령 | 하는 일 |
+|---|---|
+| `npm install` | 필요한 도구 내려받기 (처음 한 번) |
+| `npm run dev` | 개발용으로 켜기 |
+| `npm run build` | 공개용 파일 만들기 (`dist` 폴더) |
+| `npm run preview` | 공개용 파일 미리 보기 |
+| `npm run lint` | 코드 실수 검사 |
+
+---
+
+## 2. 폰에서 확인하는 방법
+
+### 가장 쉬운 방법: 공개(배포)한 주소로 열기
+아래 **3. 무료로 공개하기**를 하면 `https://...` 주소가 생겨요. 폰 브라우저로 그 주소를 열면 끝이에요.
+
+### 같은 와이파이에서 잠깐 확인하기 (개발 중)
+1. 컴퓨터와 폰을 **같은 와이파이**에 연결해요.
+2. 컴퓨터에서 `npm run dev`를 실행하면 `Network: http://192.168.x.x:5173` 같은 주소가 나와요.
+3. 폰 브라우저에 그 주소를 입력해요.
+
+> ⚠️ 이 방법은 `https`가 아니라서 **오프라인 실행, 홈 화면 설치, 폰 알림은 동작하지 않아요.** 화면과 기본 기능 확인용이에요.
+
+### 홈 화면에 앱처럼 설치하기 (https 주소에서)
+- **안드로이드 (크롬)**: 오른쪽 위 ⋮ 메뉴 → **앱 설치** 또는 **홈 화면에 추가**
+- **아이폰 (사파리)**: 아래쪽 공유 버튼 □↑ → **홈 화면에 추가**
+
+설치하면 주소창 없이 앱처럼 열리고, 인터넷이 없어도 실행돼요.
+
+---
+
+## 3. 무료로 공개(배포)하는 방법
+
+PWA(설치·오프라인)는 **https 주소**에서만 동작해요. 아래 두 방법 모두 무료이고 https 주소를 줘요.
+
+### 방법 A. GitHub Pages (추천: 한 번 설정하면 자동)
+이 프로젝트에는 자동 배포 설정(`.github/workflows/deploy.yml`)이 이미 들어 있어요.
+
+1. [github.com](https://github.com)에서 계정을 만들어요 (무료).
+2. 오른쪽 위 **+** → **New repository** → 이름을 `hannun-planner`로 → **Create repository**.
+3. 이 폴더의 내용을 그 저장소에 올려요. (Claude에게 "GitHub에 올려줘"라고 부탁해도 돼요. 이때 claude.ai에서 GitHub 연결이 필요해요.)
+4. 저장소 화면에서 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 바꿔요.
+5. 1~2분 기다리면 `https://내아이디.github.io/hannun-planner/` 주소로 열려요.
+   (진행 상황은 저장소의 **Actions** 탭에서 볼 수 있어요.)
+
+이후로는 코드를 고쳐서 올릴 때마다 **자동으로 다시 공개**돼요.
+
+### 방법 B. Netlify Drop (GitHub 없이, 끌어다 놓기)
+1. 컴퓨터에서 `npm run build`를 실행해 `dist` 폴더를 만들어요.
+2. [app.netlify.com/drop](https://app.netlify.com/drop)에 들어가서 `dist` 폴더를 **끌어다 놓아요.**
+3. 바로 `https://...netlify.app` 주소가 생겨요.
+   (계속 유지하려면 안내에 따라 무료 가입을 해야 해요. 가입하지 않으면 잠시 뒤 사라져요.)
+
+> 💡 공개해도 **데이터는 각자의 폰에만 저장**돼요. 주소를 다른 사람이 열어도 내 일정은 보이지 않아요.
+
+---
+
+## 4. 백업 방법 (꼭 해 두세요!)
+
+데이터는 폰 브라우저 안에만 있어서, 아래 경우에는 **사라질 수 있어요.**
+- 브라우저의 "인터넷 사용 기록/사이트 데이터 삭제"를 했을 때
+- 폰을 바꾸거나 초기화했을 때
+- 아이폰에서 홈 화면에 설치하지 않고 사파리로만 쓰다가, 오래(약 7일 이상) 열지 않았을 때
+
+### 백업 저장하기
+1. **오늘** 화면 오른쪽 위 ⚙️ → **설정**
+2. **백업 파일 저장하기**를 눌러요.
+3. `hannun-planner-backup-날짜.json` 파일이 저장돼요.
+   - 안드로이드: **내 파일 → 다운로드** 폴더
+   - 아이폰: **파일** 앱 → 다운로드 (또는 저장 위치를 고르라고 나와요)
+4. 안전하게 하려면 그 파일을 **카카오톡 나에게 보내기, 구글 드라이브, 아이클라우드** 등에도 한 부 보관해요.
+
+설정 화면에서 **마지막 백업 날짜**를 확인할 수 있어요. 일주일에 한 번쯤 추천해요.
+
+### 백업 불러오기 (복원 / 새 폰으로 옮기기)
+1. 새 폰에서 한눈 플래너를 열어요.
+2. ⚙️ 설정 → **백업 파일 불러오기** → 저장해 둔 `.json` 파일을 골라요.
+3. "불러오기 완료!"가 나오면 끝이에요.
+
+> 불러오기는 **지금 내용을 지우지 않고 합쳐요.** 같은 항목이 있으면 더 최근에 고친 쪽을 남겨요.
+> 그래서 실수로 불러와도 데이터를 잃지 않아요.
+
+---
+
+## 알아두면 좋은 점
+- **알림은 앱이 열려 있을 때만** 와요. 서버가 없어서 앱을 완전히 닫으면 알림을 보낼 수 없어요.
+  - 알림은 설정에서 스위치를 켤 때만 권한을 물어봐요.
+  - 아이폰은 **홈 화면에 설치한 뒤에** 폰 알림을 받을 수 있어요. 설치하지 않아도 앱 화면 안의 파란 알림은 보여요.
+- **반복 항목**을 삭제하면 모든 날짜에서 지워져요. 완료 체크는 날짜마다 따로예요.
+- **메모 탭에서 쓴 메모**도 쓴 날짜의 "오늘" 목록에 함께 보여요.
+
+## 만든 도구
+React, TypeScript, Vite, Tailwind CSS, vite-plugin-pwa
+
+## 폴더 구조
+```
+src/
+├── App.tsx            앱 전체 틀 (탭, 검색·설정 화면, 알림)
+├── types.ts           "항목"의 모양
+├── pages/             화면 (오늘, 달력, 메모, 검색, 설정)
+├── components/        재사용 블록 (입력창, 목록 줄, 수정 창, 되돌리기 안내 등)
+├── store/             저장 (localStorage, 설정, 백업)
+├── hooks/             다크모드, 오늘 날짜, 알림
+└── utils/             날짜·반복·검색 계산
+public/icons/          앱 아이콘
 ```

@@ -63,10 +63,18 @@
   권한 요청은 설정에서 스위치를 켤 때만. 앱 안 파란 배너는 권한과 상관없이 표시.
 - 반복 항목 완료는 날짜별(`doneDates`), 반복 항목 삭제는 모든 날짜에서 삭제
 - 메모 탭에서 쓴 메모도 쓴 날짜의 오늘 목록에 보임 (사용자 확인함)
+- PWA: `vite-plugin-pwa` (generateSW, autoUpdate). `base: './'`라서 GitHub Pages 하위 주소에서도 동작
+  - 아이콘: `public/icons/` (192, 512, maskable-512, apple-touch-icon 180), `public/favicon.svg`
+  - 서비스 워커는 `npm run build` 결과물에만 있음 → 오프라인 확인은 `npm run preview`(4173)에서
+- 배포: `.github/workflows/deploy.yml` (main에 push → GitHub Pages). README에 Netlify Drop 방법도 있음
+
+## 다음에 할 수 있는 것 (아직 안 함, 사용자에게 먼저 물어보기)
+- GitHub 저장소 연결 후 push + Pages 공개
+- 이번 버전 제외 목록(서버, 로그인, 동기화, 공유, 위젯, 습관 트래커)은 계속 넣지 않기
 
 ## 진행 상황
 - [x] 1단계 뼈대 + 오늘 화면
 - [x] 2단계 달력
 - [x] 3단계 메모 + 검색
 - [x] 4단계 반복·알림·설정·백업
-- [ ] 5단계 PWA + 마무리
+- [x] 5단계 PWA + 마무리 (v1.0.0)
