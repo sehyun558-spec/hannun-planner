@@ -77,6 +77,9 @@
   권한 요청은 설정에서 스위치를 켤 때만. 앱 안 파란 배너는 권한과 상관없이 표시.
 - 반복 항목 완료는 날짜별(`doneDates`), 반복 항목 삭제는 모든 날짜에서 삭제
 - 메모 탭에서 쓴 메모도 쓴 날짜의 오늘 목록에 보임 (사용자 확인함)
+- 못 한 일 넘기기(`CarryOverBar`, 오늘 화면 날짜 아래): 오늘 이전 + 안 끝낸 + 반복 아닌 **할 일만**. "어제/지난 날 못 한 일 N개"
+  [가져오기]=전부 오늘 날짜로, [✕]=그날만 숨김(localStorage `hannun-planner:carry-dismissed`에 날짜 저장)
+- 한국어 한 줄 입력(날짜·시간 알아듣기), 밀어서 "내일로"는 계획만 하고 사용자가 이번엔 빼기로 함
 - PWA: `vite-plugin-pwa` (generateSW, autoUpdate). `base: './'`라서 GitHub Pages 하위 주소에서도 동작
   - 아이콘: `public/icons/` (192, 512, maskable-512, apple-touch-icon 180), `public/favicon.svg`
   - 서비스 워커는 `npm run build` 결과물에만 있음 → 오프라인 확인은 `npm run preview`(4173)에서

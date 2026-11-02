@@ -10,6 +10,7 @@ import { EditSheet } from '../components/EditSheet'
 import { CheckCircle } from '../components/CheckCircle'
 import { ProgressRing } from '../components/ProgressRing'
 import { CheerToast } from '../components/CheerToast'
+import { CarryOverBar } from '../components/CarryOverBar'
 import { SearchIcon, SettingsIcon, StarIcon } from '../components/Icons'
 
 interface Props {
@@ -75,6 +76,9 @@ export function TodayPage({ today, onSearch, onSettings }: Props) {
           )}
         </div>
       </header>
+
+      {/* 어제(지난 날) 못 한 일 넘기기 */}
+      <CarryOverBar today={today} />
 
       {/* 오늘 꼭 할 한 가지 */}
       {total > 0 && (
