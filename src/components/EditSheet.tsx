@@ -1,10 +1,11 @@
 // 항목을 눌렀을 때 아래에서 올라오는 수정 창
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { Item, Repeat } from '../types'
 import { KindPicker } from './KindPicker'
 import { StarIcon } from './Icons'
 import { fromDateStr, formatShortDate, WEEKDAYS } from '../utils/date'
+import { useDragToClose, SHEET_ANIM_MS } from '../hooks/useDragToClose'
 
 /** '매주 월요일마다', '매달 2일에', '11월 2일부터 매일' */
 function repeatHint(repeat: Repeat, date: string): string {
@@ -37,12 +38,16 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
   const [draft, setDraft] = useState<Item>(item)
   const set = (patch: Partial<Item>) => setDraft((d) => ({ ...d, ...patch }))
 
+  // 손가락으로 아래로 끌어내리면 닫혀요
+  const sheetRef = useRef<HTMLFormElement>(null)
+  const { dy, dragging, closing, close } = useDragToClose(sheetRef, onClose)
+
   // 뒤로가기 키(ESC)로 닫기
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close()
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+  }, [close])
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -69,15 +74,32 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
       aria-modal="true"
       aria-label={isNew ? '새로 만들기' : '수정하기'}
     >
-      <button type="button" aria-label="닫기" onClick={onClose} className="fadein absolute inset-0 bg-ink/25" />
+      <button
+        type="button"
+        aria-label="닫기"
+        onClick={close}
+        className="fadein absolute inset-0 bg-ink/25"
+        style={{
+          opacity: closing ? 0 : Math.max(0, 1 - dy / 400),
+          transition: dragging ? 'none' : `opacity ${SHEET_ANIM_MS}ms ease-out`,
+        }}
+      />
       <form
+        ref={sheetRef}
         onSubmit={submit}
-        className="sheetup relative max-h-[92dvh] w-full max-w-md space-y-5 overflow-y-auto rounded-t-2xl border-t border-line bg-paper px-5 pt-3"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)' }}
+        className="sheetup relative max-h-[92dvh] w-full max-w-md space-y-5 overflow-y-auto overscroll-contain rounded-t-2xl border-t border-line bg-paper px-5"
+        style={{
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)',
+          transform: closing ? 'translateY(100%)' : `translateY(${dy}px)`,
+          transition: dragging ? 'none' : `transform ${SHEET_ANIM_MS}ms ease-out`,
+        }}
       >
-        <div className="mx-auto h-1 w-9 rounded-full bg-line" aria-hidden />
+        {/* 손잡이: 여기를 잡고 아래로 내리면 닫혀요 */}
+        <div className="-mx-5 flex h-7 cursor-grab items-center justify-center" aria-hidden>
+          <div className="h-1 w-9 rounded-full bg-muted/40" />
+        </div>
 
-        <div className="flex items-center justify-between">
+        <div className="-mt-3 flex items-center justify-between">
           <h2 className="text-[22px] font-light">{isNew ? '새로 만들기' : '수정하기'}</h2>
           <button
             type="button"
@@ -181,7 +203,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
           ) : (
             <button
               type="button"
-              onClick={onClose}
+              onClick={close}
               className="h-12 rounded-xl border border-line px-5 text-[15px] text-muted active:bg-line"
             >
               취소
