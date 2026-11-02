@@ -2,8 +2,9 @@
 import type { Item } from '../types'
 import { isDoneOn } from '../utils/items'
 import { formatKoreanTime, formatShortDate } from '../utils/date'
-import { CheckIcon, MemoIcon, StarIcon } from './Icons'
+import { MemoIcon, StarIcon } from './Icons'
 import { SwipeRow } from './SwipeRow'
+import { CheckCircle } from './CheckCircle'
 
 interface Props {
   item: Item
@@ -29,55 +30,31 @@ export function ItemRow({ item, day, showDate, onToggle, onStar, onEdit, onDelet
       label={`${item.title} 수정하기`}
       onTap={onEdit}
       onDelete={onDelete}
-      className="flex min-h-16 items-center gap-1 px-1 py-2"
+      className="flex min-h-14 items-center gap-1 bg-paper py-1.5"
     >
       {(guard) => (
         <>
           {/* 완료 동그라미 (메모는 메모 표시) */}
           {item.kind === 'memo' ? (
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center text-gray-400 dark:text-gray-500">
-              <MemoIcon className="h-6 w-6" />
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center text-muted">
+              <MemoIcon className="h-5 w-5" />
             </span>
           ) : (
-            <button
-              type="button"
-              onClick={guard(onToggle)}
-              aria-label={done ? '완료 취소' : '완료하기'}
-              aria-pressed={done}
-              className="flex h-12 w-12 shrink-0 items-center justify-center"
-            >
-              <span
-                className={`flex h-7 w-7 items-center justify-center rounded-full border-2 ${
-                  done
-                    ? 'border-blue-600 bg-blue-600 text-white'
-                    : 'border-gray-300 dark:border-gray-600'
-                }`}
-              >
-                {done && <CheckIcon className="h-4 w-4" />}
-              </span>
-            </button>
+            <CheckCircle done={done} onClick={guard(onToggle)} />
           )}
 
           <div className="min-w-0 flex-1 py-1">
-            <p
-              className={`break-words text-lg leading-snug ${
-                done ? 'text-gray-400 line-through dark:text-gray-500' : ''
-              }`}
-            >
-              {item.title}
+            <p className="text-base leading-snug break-words">
+              <span className={`strike ${done ? 'is-done' : ''}`}>{item.title}</span>
             </p>
             {hasSub && (
-              <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[13px] text-muted">
                 {showDate && <span>{formatShortDate(item.date)}</span>}
-                {item.time && (
-                  <span className="font-semibold text-blue-600 dark:text-blue-400">
-                    {formatKoreanTime(item.time)}
-                  </span>
-                )}
+                {item.time && <span className="font-semibold text-ink/70">{formatKoreanTime(item.time)}</span>}
                 {item.kind === 'event' && !item.time && <span>하루 종일</span>}
                 {item.kind === 'event' && <span>일정</span>}
                 {item.kind === 'memo' && <span>메모</span>}
-                {item.repeat !== 'none' && <span>🔁 {REPEAT_LABEL[item.repeat]}</span>}
+                {item.repeat !== 'none' && <span>{REPEAT_LABEL[item.repeat]} 반복</span>}
                 {item.content && <span className="truncate">{item.content.split('\n')[0]}</span>}
               </p>
             )}
@@ -88,11 +65,11 @@ export function ItemRow({ item, day, showDate, onToggle, onStar, onEdit, onDelet
             onClick={guard(onStar)}
             aria-label={item.starred ? '중요 표시 해제' : '중요 표시'}
             aria-pressed={item.starred}
-            className={`flex h-12 w-12 shrink-0 items-center justify-center ${
-              item.starred ? 'text-blue-600 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'
+            className={`flex h-12 w-12 shrink-0 items-center justify-center transition-colors duration-200 ${
+              item.starred ? 'text-ink' : 'text-line'
             }`}
           >
-            <StarIcon className="h-6 w-6" filled={item.starred} />
+            <StarIcon className="h-5 w-5" filled={item.starred} />
           </button>
         </>
       )}

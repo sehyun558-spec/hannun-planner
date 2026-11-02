@@ -6,18 +6,35 @@ import { occursOn, sortItems } from '../utils/items'
 import { ItemRow } from './ItemRow'
 import { EditSheet } from './EditSheet'
 
-export function DayList({ day, emptyText }: { day: string; emptyText: string }) {
+interface Props {
+  day: string
+  /** 비어 있을 때 보여줄 다정한 문구 (두 줄까지) */
+  emptyText: string
+  emptySub?: string
+  /** 목록에서 빼고 보여줄 항목 (오늘의 한 가지) */
+  excludeId?: string
+}
+
+export function DayList({ day, emptyText, emptySub, excludeId }: Props) {
   const { items, updateItem, removeItem, toggleDone, toggleStar } = useItems()
   const [editing, setEditing] = useState<Item | null>(null)
 
-  const list = useMemo(() => sortItems(items.filter((it) => occursOn(it, day))), [items, day])
+  const list = useMemo(
+    () => sortItems(items.filter((it) => it.id !== excludeId && occursOn(it, day))),
+    [items, day, excludeId],
+  )
 
   return (
     <>
       {list.length === 0 ? (
-        <p className="py-12 text-center text-lg text-gray-400 dark:text-gray-500">{emptyText}</p>
+        emptyText ? (
+          <div className="py-14 text-center">
+            <p className="text-base text-ink/80">{emptyText}</p>
+            {emptySub && <p className="mt-1 text-[13px] text-muted">{emptySub}</p>}
+          </div>
+        ) : null
       ) : (
-        <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+        <ul className="divide-y divide-line">
           {list.map((item) => (
             <li key={item.id}>
               <ItemRow

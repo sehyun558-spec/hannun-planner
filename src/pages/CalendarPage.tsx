@@ -68,12 +68,12 @@ export function CalendarPage({ today }: { today: string }) {
   }
 
   const navBtn =
-    'flex h-12 min-w-12 items-center justify-center rounded-2xl px-3 font-semibold active:bg-gray-100 dark:active:bg-gray-800'
+    'flex h-11 min-w-11 items-center justify-center rounded-xl px-3 font-light text-ink transition-colors duration-200 active:bg-line'
 
   return (
-    <div className="space-y-4">
-      <header className="flex items-center justify-between pt-2">
-        <h1 className="text-3xl font-bold">
+    <div className="space-y-6">
+      <header className="flex items-center justify-between pt-4">
+        <h1 className="text-[28px] font-light tracking-tight">
           {view.y}년 {view.m + 1}월
         </h1>
         <div className="flex items-center">
@@ -84,7 +84,7 @@ export function CalendarPage({ today }: { today: string }) {
             type="button"
             onClick={goToday}
             aria-label="오늘로 이동"
-            className={`${navBtn} text-base text-blue-600 dark:text-blue-400`}
+            className={`${navBtn} text-[15px] text-ink`}
           >
             오늘
           </button>
@@ -95,7 +95,7 @@ export function CalendarPage({ today }: { today: string }) {
       </header>
 
       <div onPointerDown={onDown} onPointerUp={onUp} style={{ touchAction: 'pan-y' }} className="select-none">
-        <div className="grid grid-cols-7 pb-1 text-center text-sm font-semibold text-gray-400 dark:text-gray-500">
+        <div className="grid grid-cols-7 pb-2 text-center text-xs text-muted">
           {WEEKDAYS.map((w) => (
             <span key={w}>{w}</span>
           ))}
@@ -114,29 +114,26 @@ export function CalendarPage({ today }: { today: string }) {
                 onClick={() => pick(day)}
                 aria-label={`${formatKoreanDate(day)}${dot !== 'none' ? ', 항목 있음' : ''}`}
                 aria-pressed={isSel}
-                className="flex h-12 flex-col items-center justify-center gap-0.5"
+                className="flex h-12 flex-col items-center justify-center gap-1"
               >
                 <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-lg ${
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-base transition-colors duration-200 ${
                     isSel
-                      ? 'bg-blue-600 font-bold text-white'
+                      ? 'bg-ink font-semibold text-card'
                       : isToday
-                        ? 'font-bold text-blue-600 ring-2 ring-blue-600 dark:text-blue-400 dark:ring-blue-400'
+                        ? 'border border-ink font-semibold'
                         : inMonth
                           ? ''
-                          : 'text-gray-300 dark:text-gray-700'
+                          : 'text-muted/50'
                   }`}
                 >
                   {d.getDate()}
                 </span>
                 <span
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    dot === 'open'
-                      ? 'bg-blue-600 dark:bg-blue-400'
-                      : dot === 'done'
-                        ? 'bg-gray-300 dark:bg-gray-600'
-                        : 'bg-transparent'
+                  className={`h-1 w-1 rounded-full ${
+                    dot === 'open' ? 'bg-ink' : dot === 'done' ? 'bg-muted/50' : 'bg-transparent'
                   }`}
+                  data-dot={dot}
                   aria-hidden
                 />
               </button>
@@ -145,13 +142,13 @@ export function CalendarPage({ today }: { today: string }) {
         </div>
       </div>
 
-      <section className="space-y-3 border-t border-gray-100 pt-4 dark:border-gray-800">
-        <h2 className="text-xl font-bold">
+      <section className="space-y-5 border-t border-line pt-6">
+        <h2 className="text-lg font-light">
           {formatKoreanDate(selected)}
-          {selected === today && <span className="text-blue-600 dark:text-blue-400"> · 오늘</span>}
+          {selected === today && <span className="text-muted"> · 오늘</span>}
         </h2>
         <QuickInput date={selected} />
-        <DayList day={selected} emptyText="이날은 비어 있어요" />
+        <DayList day={selected} emptyText="이날은 비어 있어요" emptySub="필요하면 위에 바로 적어 보세요" />
       </section>
     </div>
   )

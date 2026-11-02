@@ -1,24 +1,175 @@
 @import "tailwindcss";
 
-/* 다크모드는 <html class="dark"> 로 켜고 꺼요 */
+/*
+ * ─────────────────────────────────────────────
+ *  한눈 플래너 색상표 — 모든 색은 여기서만 정해요
+ *  (다크 모드를 다시 켤 때는 아래 :root 값만 바꾼 블록을 하나 더 만들면 돼요)
+ * ─────────────────────────────────────────────
+ */
+:root {
+  --paper: #faf8f5; /* 배경: 따뜻한 오프화이트 */
+  --card: #ffffff; /* 카드·입력칸 */
+  --ink: #2b2b2b; /* 기본 글자 */
+  --muted: #8a8680; /* 보조 글자 */
+  --line: #ece8e2; /* 구분선 */
+  --sage: #4a7c6f; /* 포인트 색 (체크, 주요 버튼, 진행 표시에만) */
+
+  /* 시간 따라 바뀌는 배경 (오프화이트를 아주 살짝만 바꾼 값) */
+  --paper-morning: #fbf7f0; /* 아침 6~11시: 아주 옅게 따뜻하게 */
+  --paper-day: #faf8f5; /* 낮: 기본 */
+  --paper-evening: #f7f7f4; /* 저녁 18시~: 아주 옅게 차분하게 */
+}
+
+html[data-daypart='morning'] {
+  --paper: var(--paper-morning);
+}
+html[data-daypart='evening'] {
+  --paper: var(--paper-evening);
+}
+
+/* 기본 색(파랑, 회색 등)은 모두 끄고, 위 색상표만 쓰게 해요 */
+@theme {
+  --color-*: initial;
+}
+@theme inline {
+  --color-paper: var(--paper);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-sage: var(--sage);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+}
+
+/* 나중에 다크 모드를 다시 켤 때 쓰는 표시 */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR",
-    "Malgun Gothic", system-ui, sans-serif;
+@font-face {
+  font-family: 'Pretendard Variable';
+  src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
 }
 
 html {
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
+  background-color: var(--paper);
+  transition: background-color 0.4s ease;
 }
 
 body {
   margin: 0;
-  background-color: #ffffff;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.55;
   overscroll-behavior-y: none;
+  transition: background-color 0.4s ease;
 }
 
-html.dark body {
-  background-color: #030712;
+::placeholder {
+  color: var(--muted);
+}
+
+/* 키보드로 움직일 때 보이는 테두리 */
+:focus-visible {
+  outline: 2px solid var(--muted);
+  outline-offset: 2px;
+}
+/* 입력칸은 테두리 색이 바뀌는 것으로 충분해요 */
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
+/* ── 완료의 손맛 ───────────────────────────── */
+
+/* 글자에 줄이 왼쪽→오른쪽으로 그어지고, 살짝 흐려져요 */
+.strike {
+  background-image: linear-gradient(var(--muted), var(--muted));
+  background-repeat: no-repeat;
+  background-position: 0 58%;
+  background-size: 0% 1.5px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-size 0.3s ease-out,
+    color 0.25s ease 0.15s;
+}
+.strike.is-done {
+  background-size: 100% 1.5px;
+  color: var(--muted);
+}
+
+/* 체크 표시가 펜으로 긋듯 그려져요 */
+.check-path {
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+  transition: stroke-dashoffset 0.3s ease-out 0.05s;
+}
+.is-done .check-path {
+  stroke-dashoffset: 0;
+}
+
+/* 잠깐 떴다 사라지는 문구 */
+@keyframes softpop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  15%,
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.softpop {
+  animation: softpop 2.2s ease forwards;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fadein {
+  animation: fadein 0.3s ease;
+}
+
+@keyframes sheetup {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.sheetup {
+  animation: sheetup 0.3s ease-out;
+}
+
+/* 폰 설정에서 "동작 줄이기"를 켠 사람에게는 움직임을 꺼요 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
 }

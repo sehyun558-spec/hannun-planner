@@ -21,14 +21,12 @@ export function UndoToast() {
       style={{ bottom: 'calc(env(safe-area-inset-bottom) + 5rem)' }}
       role="status"
     >
-      <div className="flex w-full max-w-md items-center gap-3 rounded-2xl bg-gray-900 py-2 pr-2 pl-5 text-white shadow-lg dark:bg-gray-100 dark:text-gray-900">
-        <p className="min-w-0 flex-1 truncate text-base">
-          ‘{lastDeleted.title}’ 삭제됨
-        </p>
+      <div className="fadein flex w-full max-w-md items-center gap-3 rounded-2xl bg-ink py-1.5 pr-1.5 pl-5 text-card">
+        <p className="min-w-0 flex-1 truncate text-[15px]">‘{lastDeleted.title}’ 삭제됨</p>
         <button
           type="button"
           onClick={undoDelete}
-          className="h-11 shrink-0 rounded-xl px-4 text-base font-bold text-blue-300 active:bg-white/10 dark:text-blue-600 dark:active:bg-black/10"
+          className="h-11 shrink-0 rounded-xl px-4 text-[15px] font-semibold text-card underline underline-offset-4 active:bg-card/10"
         >
           되돌리기
         </button>

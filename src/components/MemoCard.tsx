@@ -21,29 +21,29 @@ export function MemoCard({ item, onOpen, onStar, onDelete }: Props) {
       label={`${item.title} 메모 열기`}
       onTap={onOpen}
       onDelete={onDelete}
-      className="flex gap-2 rounded-2xl border border-gray-200 py-3 pr-1 pl-4 dark:border-gray-800"
+      className="flex gap-2 rounded-2xl border border-line bg-card py-4 pr-1 pl-5"
     >
       {(guard) => (
         <>
-          <div className="min-w-0 flex-1 py-1">
-            <p className="truncate text-lg font-bold">{item.title}</p>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-base font-semibold">{item.title}</p>
             {preview && (
-              <p className="mt-1 line-clamp-2 text-base whitespace-pre-line text-gray-600 dark:text-gray-300">
+              <p className="mt-1.5 line-clamp-2 text-[15px] leading-relaxed whitespace-pre-line text-muted">
                 {preview}
               </p>
             )}
-            <p className="mt-1.5 text-sm text-gray-400 dark:text-gray-500">{formatShortDate(item.date)}</p>
+            <p className="mt-2 text-xs text-muted">{formatShortDate(item.date)}</p>
           </div>
           <button
             type="button"
             onClick={guard(onStar)}
             aria-label={item.starred ? '중요 표시 해제' : '중요 표시'}
             aria-pressed={item.starred}
-            className={`flex h-12 w-12 shrink-0 items-center justify-center ${
-              item.starred ? 'text-blue-600 dark:text-blue-400' : 'text-gray-300 dark:text-gray-600'
+            className={`-mt-2 flex h-12 w-12 shrink-0 items-center justify-center transition-colors duration-200 ${
+              item.starred ? 'text-ink' : 'text-line'
             }`}
           >
-            <StarIcon className="h-6 w-6" filled={item.starred} />
+            <StarIcon className="h-5 w-5" filled={item.starred} />
           </button>
         </>
       )}

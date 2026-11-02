@@ -29,42 +29,42 @@ export function SearchPage({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-30 overflow-y-auto bg-white dark:bg-gray-950"
+      className="fadein fixed inset-0 z-30 overflow-y-auto bg-paper"
       role="dialog"
       aria-modal="true"
       aria-label="통합 검색"
     >
       <div
-        className="mx-auto max-w-md space-y-3 px-4"
+        className="mx-auto max-w-md space-y-5 px-5"
         style={{
           paddingTop: 'calc(env(safe-area-inset-top) + 0.75rem)',
           paddingBottom: 'calc(env(safe-area-inset-bottom) + 6rem)',
         }}
       >
-        <div className="flex items-center gap-1 pt-2">
+        <div className="flex items-center gap-1 pt-4">
           <button
             type="button"
             onClick={onClose}
             aria-label="검색 닫기"
-            className="-ml-2 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl active:bg-gray-100 dark:active:bg-gray-800"
+            className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-ink active:bg-line"
           >
-            <BackIcon className="h-7 w-7" />
+            <BackIcon className="h-6 w-6" />
           </button>
           <SearchBox value={query} onChange={setQuery} placeholder="일정·할 일·메모 검색" autoFocus />
         </div>
 
         {!query.trim() ? (
-          <p className="py-12 text-center text-lg text-gray-400 dark:text-gray-500">
-            제목이나 내용으로 찾아요 🔍
+          <p className="py-14 text-center text-base text-muted">
+            제목이나 내용으로 찾아요
           </p>
         ) : results.length === 0 ? (
-          <p className="py-12 text-center text-lg text-gray-400 dark:text-gray-500">
+          <p className="py-14 text-center text-base text-ink/80">
             ‘{query}’에 맞는 항목이 없어요
           </p>
         ) : (
           <>
-            <p className="px-1 text-base text-gray-500 dark:text-gray-400">{results.length}개 찾았어요</p>
-            <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+            <p className="px-1 text-[13px] text-muted">{results.length}개 찾았어요</p>
+            <ul className="divide-y divide-line">
               {results.map((item) => (
                 <li key={item.id}>
                   <ItemRow

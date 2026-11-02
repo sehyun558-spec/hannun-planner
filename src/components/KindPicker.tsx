@@ -12,7 +12,7 @@ export function KindPicker({
   onChange: (k: ItemKind) => void
 }) {
   return (
-    <div className="flex gap-1 rounded-2xl bg-gray-100 p-1 dark:bg-gray-800" role="radiogroup" aria-label="종류">
+    <div className="flex gap-1" role="radiogroup" aria-label="종류">
       {KINDS.map((k) => {
         const active = value === k
         return (
@@ -22,10 +22,8 @@ export function KindPicker({
             role="radio"
             aria-checked={active}
             onClick={() => onChange(k)}
-            className={`h-11 flex-1 rounded-xl text-base font-semibold transition-colors ${
-              active
-                ? 'bg-white text-blue-600 shadow-sm dark:bg-gray-950 dark:text-blue-400'
-                : 'text-gray-500 dark:text-gray-400'
+            className={`h-11 min-w-16 rounded-xl px-4 text-[15px] transition-colors duration-200 ${
+              active ? 'border border-line bg-card font-semibold text-ink' : 'border border-transparent text-muted'
             }`}
           >
             {KIND_LABEL[k]}

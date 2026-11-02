@@ -15,6 +15,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import { useTheme } from './hooks/useTheme'
 import { useToday } from './hooks/useToday'
 import { useReminders } from './hooks/useReminders'
+import { useDayPart } from './hooks/useDayPart'
 
 type Overlay = 'search' | 'settings' | null
 
@@ -26,24 +27,26 @@ function Shell() {
   const today = useToday()
   const { items, saveFailed } = useItems()
 
-  useTheme(settings.theme)
+  // 새 디자인은 밝은 화면만 써요 (다크 모드는 색상표를 만든 뒤 settings.theme 로 다시 켤 수 있어요)
+  useTheme('light')
+  useDayPart()
   useReminders(items, settings.notify, (it) => setReminders((prev) => [...prev, it]))
   const closeReminders = useCallback(() => setReminders([]), [])
   const closeOverlay = useCallback(() => setOverlay(null), [])
 
   return (
-    <div className="min-h-dvh bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <div className="min-h-dvh bg-paper text-ink">
       {/* 검색·설정 화면이 열려 있으면 뒤 화면은 눌리지 않게 */}
       <div inert={overlay !== null}>
         <main
-          className="mx-auto max-w-md px-4"
+          className="mx-auto max-w-md px-5"
           style={{
             paddingTop: 'calc(env(safe-area-inset-top) + 0.75rem)',
             paddingBottom: 'calc(env(safe-area-inset-bottom) + 6rem)',
           }}
         >
           {saveFailed && (
-            <p className="mb-3 rounded-2xl bg-red-50 p-3 text-base text-red-600 dark:bg-red-950 dark:text-red-300">
+            <p className="mt-3 rounded-2xl border border-ink bg-card p-4 text-[15px] text-ink">
               저장 공간이 부족해서 저장하지 못했어요. 설정에서 백업을 받아 두세요.
             </p>
           )}

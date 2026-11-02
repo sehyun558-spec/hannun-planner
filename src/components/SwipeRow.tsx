@@ -13,6 +13,7 @@ interface Props {
   label: string
   onTap: () => void
   onDelete: () => void
+  /** 배경색까지 포함한 모양 (예: 'bg-paper ...') */
   className?: string
   children: (guard: TapGuard) => ReactNode
 }
@@ -56,7 +57,7 @@ export function SwipeRow({ label, onTap, onDelete, className = '', children }: P
     if (Math.abs(dx) > width * DELETE_RATIO) {
       setLeaving(true)
       setDx(dx > 0 ? width : -width)
-      setTimeout(onDelete, 180)
+      setTimeout(onDelete, 220)
     } else {
       setDx(0)
     }
@@ -69,11 +70,11 @@ export function SwipeRow({ label, onTap, onDelete, className = '', children }: P
 
   return (
     <div ref={rowRef} className="relative overflow-hidden rounded-2xl">
-      {/* 밀었을 때 뒤에 보이는 빨간 삭제 바탕 */}
+      {/* 밀었을 때 뒤에 보이는 진한 삭제 바탕 */}
       <div
-        className={`absolute inset-0 flex items-center px-6 text-lg font-bold text-white ${
+        className={`absolute inset-0 flex items-center px-6 text-[15px] font-semibold text-card ${
           dx > 0 ? 'justify-start' : 'justify-end'
-        } ${dx === 0 ? 'bg-transparent' : 'bg-red-500'}`}
+        } ${dx === 0 ? 'bg-transparent' : 'bg-ink'}`}
         aria-hidden
       >
         삭제
@@ -97,11 +98,11 @@ export function SwipeRow({ label, onTap, onDelete, className = '', children }: P
         }}
         style={{
           transform: `translateX(${dx}px)`,
-          transition: dragging ? 'none' : 'transform 180ms ease-out',
+          transition: dragging ? 'none' : 'transform 220ms ease-out',
           touchAction: 'pan-y',
           opacity: leaving ? 0.4 : 1,
         }}
-        className={`relative cursor-pointer select-none bg-white dark:bg-gray-950 ${className}`}
+        className={`relative cursor-pointer select-none ${className}`}
       >
         {children(guard)}
       </div>

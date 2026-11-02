@@ -44,19 +44,22 @@ export function MemoPage({ today }: { today: string }) {
     })
 
   return (
-    <div className="space-y-4">
-      <header className="pt-2">
-        <h1 className="text-3xl font-bold">메모</h1>
+    <div className="space-y-6">
+      <header className="pt-4">
+        <h1 className="text-[28px] font-light tracking-tight">메모</h1>
       </header>
 
       {allMemos.length > 0 && <SearchBox value={query} onChange={setQuery} placeholder="메모 검색" />}
 
       {memos.length === 0 ? (
-        <p className="py-12 text-center text-lg whitespace-pre-line text-gray-400 dark:text-gray-500">
-          {query ? `‘${query}’에 맞는 메모가 없어요` : '메모가 없어요.\n오른쪽 아래 + 버튼으로 써 보세요 ✍️'}
-        </p>
+        <div className="py-14 text-center">
+          <p className="text-base text-ink/80">
+            {query ? `‘${query}’에 맞는 메모가 없어요` : '아직 적어둔 메모가 없어요'}
+          </p>
+          {!query && <p className="mt-1 text-[13px] text-muted">오른쪽 아래 + 를 눌러 가볍게 적어 보세요</p>}
+        </div>
       ) : (
-        <ul className="space-y-2 pb-20">
+        <ul className="space-y-3 pb-24">
           {memos.map((m) => (
             <li key={m.id}>
               <MemoCard
@@ -75,10 +78,13 @@ export function MemoPage({ today }: { today: string }) {
         type="button"
         onClick={startNew}
         aria-label="새 메모"
-        className="fixed right-4 z-10 flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg active:bg-blue-700"
-        style={{ bottom: 'calc(env(safe-area-inset-bottom) + 5.5rem)' }}
+        className="fixed z-10 flex h-14 w-14 items-center justify-center rounded-xl bg-sage text-card transition-opacity duration-200 active:opacity-80"
+        style={{
+          bottom: 'calc(env(safe-area-inset-bottom) + 5.5rem)',
+          right: 'max(1.25rem, calc((100vw - 28rem) / 2 + 1.25rem))',
+        }}
       >
-        <PlusIcon className="h-8 w-8" />
+        <PlusIcon className="h-7 w-7" />
       </button>
 
       {editing && (

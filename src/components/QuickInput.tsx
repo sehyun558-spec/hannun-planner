@@ -13,6 +13,9 @@ const PLACEHOLDER: Record<ItemKind, string> = {
   memo: '메모 입력 후 엔터',
 }
 
+const field =
+  'h-12 rounded-xl border border-line bg-card text-base text-ink outline-none transition-colors duration-200 focus:border-muted'
+
 export function QuickInput({ date, autoFocus }: { date: string; autoFocus?: boolean }) {
   const { addItem } = useItems()
   const [kind, setKind] = useState<ItemKind>('todo')
@@ -38,14 +41,7 @@ export function QuickInput({ date, autoFocus }: { date: string; autoFocus?: bool
   }
 
   return (
-    <form onSubmit={submit} className="space-y-2">
-      <KindPicker
-        value={kind}
-        onChange={(k) => {
-          setKind(k)
-          inputRef.current?.focus()
-        }}
-      />
+    <form onSubmit={submit} className="space-y-3">
       <div className="flex gap-2">
         {kind === 'event' && (
           <input
@@ -53,7 +49,7 @@ export function QuickInput({ date, autoFocus }: { date: string; autoFocus?: bool
             value={time}
             onChange={(e) => setTime(e.target.value)}
             aria-label="일정 시간"
-            className="h-14 w-32 shrink-0 rounded-2xl border-2 border-gray-200 bg-white px-2 text-base outline-none focus:border-blue-600 dark:border-gray-700 dark:bg-gray-900"
+            className={`${field} w-32 shrink-0 px-2`}
           />
         )}
         <input
@@ -64,17 +60,24 @@ export function QuickInput({ date, autoFocus }: { date: string; autoFocus?: bool
           aria-label={PLACEHOLDER[kind]}
           autoFocus={autoFocus}
           enterKeyHint="enter"
-          className="h-14 min-w-0 flex-1 rounded-2xl border-2 border-gray-200 bg-white px-4 text-lg outline-none placeholder:text-gray-400 focus:border-blue-600 dark:border-gray-700 dark:bg-gray-900 dark:placeholder:text-gray-500"
+          className={`${field} min-w-0 flex-1 px-4`}
         />
         <button
           type="submit"
           aria-label="추가"
           disabled={!text.trim()}
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-white active:bg-blue-700 disabled:bg-gray-200 disabled:text-gray-400 dark:disabled:bg-gray-800 dark:disabled:text-gray-600"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sage text-card transition-opacity duration-200 active:opacity-80 disabled:opacity-30"
         >
-          <PlusIcon className="h-7 w-7" />
+          <PlusIcon className="h-6 w-6" />
         </button>
       </div>
+      <KindPicker
+        value={kind}
+        onChange={(k) => {
+          setKind(k)
+          inputRef.current?.focus()
+        }}
+      />
     </form>
   )
 }

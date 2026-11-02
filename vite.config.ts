@@ -14,7 +14,7 @@ export default defineConfig({
     // PWA: 홈 화면 설치 + 인터넷 없이도 열리게 (서비스 워커가 앱 파일을 폰에 보관)
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png'],
+      includeAssets: ['favicon.svg', 'icons/apple-touch-icon.png', 'fonts/PretendardVariable.woff2'],
       manifest: {
         name: '한눈 플래너',
         short_name: '한눈 플래너',
@@ -24,8 +24,8 @@ export default defineConfig({
         scope: './',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ffffff',
-        theme_color: '#ffffff',
+        background_color: '#faf8f5',
+        theme_color: '#faf8f5',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
@@ -33,7 +33,9 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webmanifest,woff2}'],
+        // 글꼴 파일(약 2MB)도 폰에 보관해서 오프라인에서도 예쁜 글꼴로 보이게
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
       },

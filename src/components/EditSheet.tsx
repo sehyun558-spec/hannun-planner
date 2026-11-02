@@ -31,7 +31,7 @@ const REPEATS: { value: Repeat; label: string }[] = [
 ]
 
 const field =
-  'h-14 w-full min-w-0 rounded-2xl border-2 border-gray-200 bg-white px-4 text-lg outline-none focus:border-blue-600 dark:border-gray-700 dark:bg-gray-900'
+  'h-12 w-full min-w-0 rounded-xl border border-line bg-card px-4 text-base outline-none transition-colors duration-200 focus:border-muted'
 
 export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
   const [draft, setDraft] = useState<Item>(item)
@@ -56,26 +56,35 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
     })
   }
 
+  const label = 'mb-1.5 block text-[13px] text-muted'
+  const seg = (active: boolean) =>
+    `h-11 flex-1 rounded-xl text-[15px] transition-colors duration-200 ${
+      active ? 'border border-line bg-card font-semibold text-ink' : 'border border-transparent text-muted'
+    }`
+
   return (
-    <div className="fixed inset-0 z-40 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={isNew ? '새로 만들기' : '수정하기'}>
-      <button type="button" aria-label="닫기" onClick={onClose} className="absolute inset-0 bg-black/40" />
+    <div
+      className="fixed inset-0 z-40 flex items-end justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label={isNew ? '새로 만들기' : '수정하기'}
+    >
+      <button type="button" aria-label="닫기" onClick={onClose} className="fadein absolute inset-0 bg-ink/25" />
       <form
         onSubmit={submit}
-        className="relative max-h-[92dvh] w-full max-w-md space-y-4 overflow-y-auto rounded-t-3xl bg-white px-4 pt-3 dark:bg-gray-900"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}
+        className="sheetup relative max-h-[92dvh] w-full max-w-md space-y-5 overflow-y-auto rounded-t-2xl border-t border-line bg-paper px-5 pt-3"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.25rem)' }}
       >
-        <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-300 dark:bg-gray-700" aria-hidden />
+        <div className="mx-auto h-1 w-9 rounded-full bg-line" aria-hidden />
 
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold">{isNew ? '새로 만들기' : '수정하기'}</h2>
+          <h2 className="text-[22px] font-light">{isNew ? '새로 만들기' : '수정하기'}</h2>
           <button
             type="button"
             onClick={() => set({ starred: !draft.starred })}
             aria-pressed={draft.starred}
-            className={`flex h-11 items-center gap-1 rounded-full px-3 text-base font-semibold ${
-              draft.starred
-                ? 'bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400'
-                : 'text-gray-500 dark:text-gray-400'
+            className={`flex h-11 items-center gap-1.5 rounded-xl px-3 text-[15px] transition-colors duration-200 ${
+              draft.starred ? 'font-semibold text-ink' : 'text-muted'
             }`}
           >
             <StarIcon className="h-5 w-5" filled={draft.starred} />
@@ -86,7 +95,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
         <KindPicker value={draft.kind} onChange={(kind) => set({ kind })} />
 
         <label className="block">
-          <span className="mb-1 block text-sm font-semibold text-gray-500 dark:text-gray-400">제목</span>
+          <span className={label}>제목</span>
           <input
             value={draft.title}
             onChange={(e) => set({ title: e.target.value })}
@@ -97,7 +106,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
 
         <div className="flex gap-2">
           <label className="block min-w-0 flex-1">
-            <span className="mb-1 block text-sm font-semibold text-gray-500 dark:text-gray-400">날짜</span>
+            <span className={label}>날짜</span>
             <input
               type="date"
               value={draft.date}
@@ -107,10 +116,10 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
           </label>
           {draft.kind !== 'memo' && (
             <label className="block w-40 shrink-0">
-              <span className="mb-1 flex justify-between text-sm font-semibold text-gray-500 dark:text-gray-400">
+              <span className={`${label} flex justify-between`}>
                 시간
                 {draft.time && (
-                  <button type="button" onClick={() => set({ time: null })} className="text-blue-600 dark:text-blue-400">
+                  <button type="button" onClick={() => set({ time: null })} className="text-ink underline underline-offset-2">
                     지우기
                   </button>
                 )}
@@ -127,27 +136,23 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
 
         {draft.kind !== 'memo' && (
           <div>
-            <span className="mb-1 block text-sm font-semibold text-gray-500 dark:text-gray-400">반복</span>
-            <div className="flex gap-1 rounded-2xl bg-gray-100 p-1 dark:bg-gray-800" role="radiogroup" aria-label="반복">
-              {REPEATS.map(({ value, label }) => (
+            <span className={label}>반복</span>
+            <div className="flex gap-1" role="radiogroup" aria-label="반복">
+              {REPEATS.map(({ value, label: text }) => (
                 <button
                   key={value}
                   type="button"
                   role="radio"
                   aria-checked={draft.repeat === value}
                   onClick={() => set({ repeat: value })}
-                  className={`h-11 flex-1 rounded-xl text-base font-semibold ${
-                    draft.repeat === value
-                      ? 'bg-white text-blue-600 shadow-sm dark:bg-gray-950 dark:text-blue-400'
-                      : 'text-gray-500 dark:text-gray-400'
-                  }`}
+                  className={seg(draft.repeat === value)}
                 >
-                  {label}
+                  {text}
                 </button>
               ))}
             </div>
             {draft.repeat !== 'none' && (
-              <p className="mt-1 px-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-2 px-1 text-[13px] text-muted">
                 {repeatHint(draft.repeat, draft.date)} 나타나요. 삭제하면 모든 날짜에서 지워져요.
               </p>
             )}
@@ -155,14 +160,12 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
         )}
 
         <label className="block">
-          <span className="mb-1 block text-sm font-semibold text-gray-500 dark:text-gray-400">
-            {draft.kind === 'memo' ? '내용' : '메모 (선택)'}
-          </span>
+          <span className={label}>{draft.kind === 'memo' ? '내용' : '메모 (선택)'}</span>
           <textarea
             value={draft.content}
             onChange={(e) => set({ content: e.target.value })}
             rows={draft.kind === 'memo' ? 6 : 3}
-            className="w-full rounded-2xl border-2 border-gray-200 bg-white px-4 py-3 text-lg outline-none focus:border-blue-600 dark:border-gray-700 dark:bg-gray-900"
+            className="w-full rounded-xl border border-line bg-card px-4 py-3 text-base leading-relaxed outline-none transition-colors duration-200 focus:border-muted"
           />
         </label>
 
@@ -171,7 +174,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
             <button
               type="button"
               onClick={onDelete}
-              className="h-14 rounded-2xl px-5 text-lg font-semibold text-red-500 active:bg-red-50 dark:active:bg-red-950"
+              className="h-12 rounded-xl border border-line px-5 text-[15px] text-ink active:bg-line"
             >
               삭제
             </button>
@@ -179,14 +182,14 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="h-14 rounded-2xl px-5 text-lg font-semibold text-gray-500 active:bg-gray-100 dark:active:bg-gray-800"
+              className="h-12 rounded-xl border border-line px-5 text-[15px] text-muted active:bg-line"
             >
               취소
             </button>
           )}
           <button
             type="submit"
-            className="h-14 flex-1 rounded-2xl bg-blue-600 text-lg font-bold text-white active:bg-blue-700"
+            className="h-12 flex-1 rounded-xl bg-sage text-base font-semibold text-card active:opacity-80"
           >
             저장
           </button>

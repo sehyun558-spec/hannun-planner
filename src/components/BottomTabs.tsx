@@ -12,7 +12,7 @@ const TABS: { id: Tab; label: string; Icon: typeof TodayIcon }[] = [
 export function BottomTabs({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-gray-200 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-950/95"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-paper"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="mx-auto flex max-w-md">
@@ -24,11 +24,11 @@ export function BottomTabs({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => 
               type="button"
               onClick={() => onChange(id)}
               aria-current={active ? 'page' : undefined}
-              className={`flex h-16 flex-1 flex-col items-center justify-center gap-0.5 text-sm font-semibold ${
-                active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'
+              className={`flex h-16 flex-1 flex-col items-center justify-center gap-1 text-xs transition-colors duration-200 ${
+                active ? 'font-semibold text-ink' : 'text-muted'
               }`}
             >
-              <Icon className="h-7 w-7" />
+              <Icon className="h-6 w-6" />
               {label}
             </button>
           )
