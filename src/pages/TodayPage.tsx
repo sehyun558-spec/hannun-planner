@@ -117,7 +117,7 @@ export function TodayPage({ today, onSearch, onSettings }: Props) {
         </section>
       )}
 
-      <QuickInput date={today} autoFocus />
+      <QuickInput date={today} />
 
       <DayList
         day={today}
