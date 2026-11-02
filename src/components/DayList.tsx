@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function DayList({ day, emptyText, emptySub, excludeId }: Props) {
-  const { items, updateItem, removeItem, toggleDone, toggleStar } = useItems()
+  const { items, updateItem, requestDelete, toggleDone, toggleStar } = useItems()
   const [editing, setEditing] = useState<Item | null>(null)
 
   const list = useMemo(
@@ -43,7 +43,7 @@ export function DayList({ day, emptyText, emptySub, excludeId }: Props) {
                 onToggle={() => toggleDone(item.id, day)}
                 onStar={() => toggleStar(item.id)}
                 onEdit={() => setEditing(item)}
-                onDelete={() => removeItem(item.id)}
+                onDelete={() => requestDelete(item, day)}
               />
             </li>
           ))}
@@ -59,7 +59,7 @@ export function DayList({ day, emptyText, emptySub, excludeId }: Props) {
             setEditing(null)
           }}
           onDelete={() => {
-            removeItem(editing.id)
+            requestDelete(editing, day)
             setEditing(null)
           }}
         />

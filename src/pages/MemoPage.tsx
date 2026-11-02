@@ -9,7 +9,7 @@ import { EditSheet } from '../components/EditSheet'
 import { PlusIcon } from '../components/Icons'
 
 export function MemoPage({ today }: { today: string }) {
-  const { items, addItem, updateItem, removeItem, toggleStar } = useItems()
+  const { items, addItem, updateItem, requestDelete, toggleStar } = useItems()
   const [query, setQuery] = useState('')
   const [editing, setEditing] = useState<{ item: Item; isNew: boolean } | null>(null)
 
@@ -38,6 +38,8 @@ export function MemoPage({ today }: { today: string }) {
         doneDates: [],
         starred: false,
         repeat: 'none',
+        skipDates: [],
+        endDate: null,
         createdAt: 0,
         updatedAt: 0,
       },
@@ -66,7 +68,7 @@ export function MemoPage({ today }: { today: string }) {
                 item={m}
                 onOpen={() => setEditing({ item: m, isNew: false })}
                 onStar={() => toggleStar(m.id)}
-                onDelete={() => removeItem(m.id)}
+                onDelete={() => requestDelete(m, m.date)}
               />
             </li>
           ))}
@@ -103,7 +105,7 @@ export function MemoPage({ today }: { today: string }) {
             setEditing(null)
           }}
           onDelete={() => {
-            removeItem(editing.item.id)
+            requestDelete(editing.item, editing.item.date)
             setEditing(null)
           }}
         />

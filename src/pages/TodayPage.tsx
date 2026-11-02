@@ -11,16 +11,20 @@ import { CheckCircle } from '../components/CheckCircle'
 import { ProgressRing } from '../components/ProgressRing'
 import { CheerToast } from '../components/CheerToast'
 import { CarryOverBar } from '../components/CarryOverBar'
+import { BackupNudge } from '../components/BackupNudge'
 import { SearchIcon, SettingsIcon, StarIcon } from '../components/Icons'
 
 interface Props {
   today: string
   onSearch: () => void
   onSettings: () => void
+  /** 마지막으로 백업한 날 (백업 안내용) */
+  lastBackup: string | null
+  onBackedUp: () => void
 }
 
-export function TodayPage({ today, onSearch, onSettings }: Props) {
-  const { items, toggleDone, toggleStar, updateItem, removeItem } = useItems()
+export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp }: Props) {
+  const { items, toggleDone, toggleStar, updateItem, requestDelete } = useItems()
   const [editing, setEditing] = useState<Item | null>(null)
   const [cheer, setCheer] = useState(false)
 
@@ -126,6 +130,9 @@ export function TodayPage({ today, onSearch, onSettings }: Props) {
         emptySub={hasAnything ? undefined : '떠오르는 일이 있으면 위에 적어 보세요'}
       />
 
+      {/* 오래 백업하지 않았으면 맨 아래에 조용히 한 줄 */}
+      <BackupNudge today={today} lastBackup={lastBackup} onBackedUp={onBackedUp} />
+
       <p className="pt-4 text-center text-xs text-muted">광고 없고, 데이터는 이 기기에만 저장됩니다</p>
 
       {cheer && <CheerToast onDone={() => setCheer(false)} />}
@@ -139,7 +146,7 @@ export function TodayPage({ today, onSearch, onSettings }: Props) {
             setEditing(null)
           }}
           onDelete={() => {
-            removeItem(editing.id)
+            requestDelete(editing, today)
             setEditing(null)
           }}
         />

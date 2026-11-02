@@ -3,17 +3,19 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { Item, Repeat } from '../types'
 import { KindPicker } from './KindPicker'
-import { StarIcon } from './Icons'
+import { CalendarIcon, StarIcon } from './Icons'
 import { fromDateStr, formatKoreanTime, formatShortDate, WEEKDAYS } from '../utils/date'
 import { useDragToClose } from '../hooks/useDragToClose'
 import { PickerField } from './PickerField'
+import { openInCalendar } from '../utils/ics'
 
-/** '매주 월요일마다', '매달 2일에', '11월 2일부터 매일' */
-function repeatHint(repeat: Repeat, date: string): string {
+/** '매주 월요일마다', '매달 2일에', '11월 2일부터 매일' (끝나는 날이 있으면 '…까지' 를 붙여요) */
+function repeatHint(repeat: Repeat, date: string, endDate: string | null): string {
   const d = fromDateStr(date)
-  if (repeat === 'weekly') return `매주 ${WEEKDAYS[d.getDay()]}요일마다`
-  if (repeat === 'monthly') return `매달 ${d.getDate()}일에`
-  return `${formatShortDate(date)}부터 매일`
+  const until = endDate && endDate >= date ? `${formatShortDate(endDate)}까지 ` : ''
+  if (repeat === 'weekly') return `${until}매주 ${WEEKDAYS[d.getDay()]}요일마다`
+  if (repeat === 'monthly') return `${until}매달 ${d.getDate()}일에`
+  return `${formatShortDate(date)}부터 ${until}매일`
 }
 
 interface Props {
@@ -43,6 +45,7 @@ const field =
 export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
   const [draft, setDraft] = useState<Item>(item)
   const set = (patch: Partial<Item>) => setDraft((d) => ({ ...d, ...patch }))
+  const [calendarNote, setCalendarNote] = useState('')
 
   // 손가락으로 아래로 끌어내리면 닫혀요
   const sheetRef = useRef<HTMLFormElement>(null)
@@ -65,6 +68,11 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
       title: title || draft.content.trim().split('\n')[0].slice(0, 40),
       time: draft.kind === 'memo' ? null : draft.time || null,
       repeat: draft.kind === 'memo' ? 'none' : draft.repeat,
+      // 끝나는 날은 반복할 때만, 그리고 시작 날짜보다 앞이면 무시해요
+      endDate:
+        draft.kind !== 'memo' && draft.repeat !== 'none' && draft.endDate && draft.endDate >= draft.date
+          ? draft.endDate
+          : null,
     })
   }
 
@@ -180,10 +188,54 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
               ))}
             </div>
             {draft.repeat !== 'none' && (
-              <p className="mt-2 px-1 text-[13px] text-muted">
-                {repeatHint(draft.repeat, draft.date)} 나타나요. 삭제하면 모든 날짜에서 지워져요.
-              </p>
+              <>
+                <p className="mt-2 px-1 text-[13px] text-muted">
+                  {repeatHint(draft.repeat, draft.date, draft.endDate)} 나타나요.
+                  지울 때 이 날만 또는 전체를 고를 수 있어요.
+                </p>
+                <div className="mt-4">
+                  <span className={`${label} flex justify-between`}>
+                    끝나는 날 (선택)
+                    {draft.endDate && (
+                      <button
+                        type="button"
+                        onClick={() => set({ endDate: null })}
+                        className="-my-3 -mr-1 px-1 py-3 text-ink underline underline-offset-2"
+                      >
+                        지우기
+                      </button>
+                    )}
+                  </span>
+                  <PickerField
+                    type="date"
+                    label="끝나는 날"
+                    value={draft.endDate ?? ''}
+                    min={draft.date}
+                    onChange={(v) => set({ endDate: v || null })}
+                    display={draft.endDate ? dateLabel(draft.endDate) : '없음 · 계속 반복'}
+                  />
+                </div>
+              </>
             )}
+          </div>
+        )}
+
+        {draft.kind !== 'memo' && draft.time && (
+          <div>
+            <button
+              type="button"
+              onClick={() => {
+                openInCalendar({ ...draft, title: draft.title.trim() || draft.content.trim().split('\n')[0] || '일정' })
+                setCalendarNote('캘린더 파일을 만들었어요. 열리면 "추가"를 눌러 주세요.')
+              }}
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-card text-[15px] text-ink transition-colors duration-200 active:bg-line"
+            >
+              <CalendarIcon className="h-5 w-5 text-muted" />
+              휴대폰 캘린더에 추가
+            </button>
+            <p className="mt-2 px-1 text-[13px] text-muted" role="status">
+              {calendarNote || '10분 전 알림도 함께 들어가요. 앱을 닫아도 알림을 받을 수 있어요.'}
+            </p>
           </div>
         )}
 

@@ -7,6 +7,7 @@ import { BottomTabs } from './components/BottomTabs'
 import type { Tab } from './components/BottomTabs'
 import { UndoToast } from './components/UndoToast'
 import { ReminderBanner } from './components/ReminderBanner'
+import { RepeatDeleteSheet } from './components/RepeatDeleteSheet'
 import { TodayPage } from './pages/TodayPage'
 import { CalendarPage } from './pages/CalendarPage'
 import { MemoPage } from './pages/MemoPage'
@@ -16,6 +17,7 @@ import { useTheme } from './hooks/useTheme'
 import { useToday } from './hooks/useToday'
 import { useReminders } from './hooks/useReminders'
 import { useDayPart } from './hooks/useDayPart'
+import { todayStr } from './utils/date'
 
 type Overlay = 'search' | 'settings' | null
 
@@ -55,6 +57,8 @@ function Shell() {
               today={today}
               onSearch={() => setOverlay('search')}
               onSettings={() => setOverlay('settings')}
+              lastBackup={settings.lastBackup}
+              onBackedUp={() => updateSettings({ lastBackup: todayStr() })}
             />
           )}
           {tab === 'calendar' && <CalendarPage today={today} />}
@@ -68,6 +72,7 @@ function Shell() {
         <SettingsPage settings={settings} onChange={updateSettings} onClose={closeOverlay} />
       )}
       <UndoToast />
+      <RepeatDeleteSheet />
       <ReminderBanner items={reminders} onClose={closeReminders} />
     </div>
   )

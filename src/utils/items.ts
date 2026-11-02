@@ -4,8 +4,10 @@ import { fromDateStr } from './date'
 
 /** 이 항목이 그 날짜(day)에 나타나는지 (반복 포함) */
 export function occursOn(item: Item, day: string): boolean {
-  if (item.date === day) return true
+  if (item.date === day) return item.repeat === 'none' || !item.skipDates.includes(day)
   if (item.repeat === 'none' || day < item.date) return false
+  if (item.endDate && day > item.endDate) return false // 끝나는 날 이후에는 안 나와요
+  if (item.skipDates.includes(day)) return false // "이 날만 삭제"한 날
   const start = fromDateStr(item.date)
   const target = fromDateStr(day)
   switch (item.repeat) {

@@ -23,6 +23,10 @@ export interface Item {
   /** 중요(별) 표시 → 맨 위 고정 */
   starred: boolean
   repeat: Repeat
+  /** 반복 항목에서 "이 날만 삭제"로 건너뛴 날짜들 */
+  skipDates: string[]
+  /** 반복이 끝나는 날 'YYYY-MM-DD' (없으면 계속 반복) */
+  endDate: string | null
   createdAt: number
   updatedAt: number
 }

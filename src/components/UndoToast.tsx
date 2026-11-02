@@ -5,15 +5,15 @@ import { useItems } from '../store/ItemsContext'
 const UNDO_MS = 3000
 
 export function UndoToast() {
-  const { lastDeleted, undoDelete, dismissUndo } = useItems()
+  const { undoInfo, undoDelete, dismissUndo } = useItems()
 
   useEffect(() => {
-    if (!lastDeleted) return
+    if (!undoInfo) return
     const t = setTimeout(dismissUndo, UNDO_MS)
     return () => clearTimeout(t)
-  }, [lastDeleted, dismissUndo])
+  }, [undoInfo, dismissUndo])
 
-  if (!lastDeleted) return null
+  if (!undoInfo) return null
 
   return (
     <div
@@ -22,7 +22,9 @@ export function UndoToast() {
       role="status"
     >
       <div className="fadein flex w-full max-w-md items-center gap-3 rounded-2xl bg-ink py-1.5 pr-1.5 pl-5 text-card">
-        <p className="min-w-0 flex-1 truncate text-[15px]">‘{lastDeleted.title}’ 삭제됨</p>
+        <p className="min-w-0 flex-1 truncate text-[15px]">
+          ‘{undoInfo.title}’ {undoInfo.text}
+        </p>
         <button
           type="button"
           onClick={undoDelete}

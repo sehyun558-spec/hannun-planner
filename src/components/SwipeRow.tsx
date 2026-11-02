@@ -57,7 +57,12 @@ export function SwipeRow({ label, onTap, onDelete, className = '', children }: P
     if (Math.abs(dx) > width * DELETE_RATIO) {
       setLeaving(true)
       setDx(dx > 0 ? width : -width)
-      setTimeout(onDelete, 220)
+      setTimeout(() => {
+        onDelete()
+        // 반복 항목에서 "취소"를 고르면 항목이 남아 있으니, 줄을 제자리로 돌려놔요
+        setLeaving(false)
+        setDx(0)
+      }, 220)
     } else {
       setDx(0)
     }

@@ -98,13 +98,14 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
     if (!file) return
     try {
       const incoming = await readBackup(file)
-      const { added, updated } = mergeItems(incoming)
+      const { added, updated, skippedDeleted } = mergeItems(incoming)
+      const skippedText = skippedDeleted ? ` 백업 뒤에 지운 항목 ${skippedDeleted}개는 다시 넣지 않았어요.` : ''
       setBackupNotice({
         kind: 'ok',
         text:
           added + updated === 0
-            ? '이미 모두 들어 있는 내용이라 바뀐 게 없어요.'
-            : `불러오기 완료! 새 항목 ${added}개${updated ? `, 더 최근 내용으로 바뀐 항목 ${updated}개` : ''}.`,
+            ? `이미 모두 들어 있는 내용이라 바뀐 게 없어요.${skippedText}`
+            : `불러오기 완료! 새 항목 ${added}개${updated ? `, 더 최근 내용으로 바뀐 항목 ${updated}개` : ''}.${skippedText}`,
       })
     } catch (e) {
       setBackupNotice({ kind: 'warn', text: e instanceof Error ? e.message : '불러오지 못했어요.' })
@@ -148,6 +149,9 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
               <span className="block text-base font-semibold">일정 시간 알림</span>
               <span className="mt-0.5 block text-[13px] text-muted">
                 시간을 정한 항목을 그 시간에 알려줘요 (앱이 열려 있을 때)
+              </span>
+              <span className="mt-1 block text-[13px] text-ink/80">
+                앱을 닫아도 알림을 받으려면 일정을 휴대폰 캘린더에 추가하세요 (일정 수정 창에서)
               </span>
             </span>
             <span
@@ -205,7 +209,7 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
               저장된 항목: 할 일 {count('todo')} · 일정 {count('event')} · 메모 {count('memo')}
             </p>
           </div>
-          <p className="pt-2 text-center text-xs text-muted">한눈 플래너 v1.1</p>
+          <p className="pt-2 text-center text-xs text-muted">한눈 플래너 v1.2</p>
         </Section>
       </div>
     </div>

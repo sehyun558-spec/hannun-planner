@@ -10,10 +10,12 @@ interface Props {
   /** 칸에 보여줄 글자 (예: '11월 2일 (월)', '오후 10:00') */
   display: string
   label: string
+  /** 고를 수 있는 가장 이른 날짜/시간 */
+  min?: string
   className?: string
 }
 
-export function PickerField({ type, value, onChange, display, label, className = '' }: Props) {
+export function PickerField({ type, value, onChange, display, label, min, className = '' }: Props) {
   const ref = useRef<HTMLInputElement>(null)
   return (
     <div
@@ -29,6 +31,7 @@ export function PickerField({ type, value, onChange, display, label, className =
         ref={ref}
         type={type}
         value={value}
+        min={min}
         onChange={(e) => onChange(e.target.value)}
         onClick={() => {
           // 컴퓨터 브라우저에서도 칸 아무 데나 누르면 선택 화면이 뜨게

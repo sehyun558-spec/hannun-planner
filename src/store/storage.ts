@@ -28,6 +28,8 @@ export function normalizeItem(raw: Partial<Item>): Item | null {
       raw.repeat === 'daily' || raw.repeat === 'weekly' || raw.repeat === 'monthly'
         ? raw.repeat
         : 'none',
+    skipDates: Array.isArray(raw.skipDates) ? raw.skipDates.filter((d) => typeof d === 'string') : [],
+    endDate: typeof raw.endDate === 'string' && raw.endDate ? raw.endDate : null,
     createdAt: typeof raw.createdAt === 'number' ? raw.createdAt : now,
     updatedAt: typeof raw.updatedAt === 'number' ? raw.updatedAt : now,
   }

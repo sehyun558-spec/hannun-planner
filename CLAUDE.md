@@ -81,6 +81,15 @@
 - 못 한 일 넘기기(`CarryOverBar`, 오늘 화면 날짜 아래): 오늘 이전 + 안 끝낸 + 반복 아닌 **할 일만**. "어제/지난 날 못 한 일 N개"
   [가져오기]=전부 오늘 날짜로, [✕]=그날만 숨김(localStorage `hannun-planner:carry-dismissed`에 날짜 저장)
 - 한국어 한 줄 입력(날짜·시간 알아듣기), 밀어서 "내일로"는 계획만 하고 사용자가 이번엔 빼기로 함
+- 휴대폰 캘린더에 추가(`src/utils/ics.ts`): 시간 있는 할 일·일정의 수정 창 버튼. 1시간 길이, 10분 전 알림(VALARM),
+  반복은 RRULE(+UNTIL=끝나는 날), 이 날만 삭제한 날은 EXDATE. 시간은 폰 시간대를 따르는 floating time.
+  아이폰 Safari는 data: 주소로 열어 바로 "추가" 화면, 그 외(안드로이드·설치 앱)는 .ics 파일 내려받기
+- 반복 항목 삭제: 어디서 지우든 `requestDelete(item, day)` → 반복이면 `RepeatDeleteSheet`(이 날만/반복 전체/취소).
+  이 날만 = `skipDates`에 날짜 추가. 둘 다 되돌리기 가능. 반복에 `endDate`(끝나는 날, 선택)
+- 지운 기록(`src/store/deleted.ts`, localStorage `hannun-planner:deleted`: id→지운 시각). 되돌리기하면 기록에서 뺌.
+  백업 불러오기 때 지운 시각보다 예전(updatedAt ≤ 지운 시각) 항목은 다시 넣지 않음
+- 백업 안내(`BackupNudge`, 오늘 화면 맨 아래): 마지막 백업 14일 이상 또는 (백업 없음 + 항목 10개 이상).
+  [지금 백업] / [✕]=7일 숨김(localStorage `hannun-planner:backup-nudge-until`)
 - PWA: `vite-plugin-pwa` (generateSW, autoUpdate). `base: './'`라서 GitHub Pages 하위 주소에서도 동작
   - 아이콘: `public/icons/` (192, 512, maskable-512, apple-touch-icon 180), `public/favicon.svg`
   - 서비스 워커는 `npm run build` 결과물에만 있음 → 오프라인 확인은 `npm run preview`(4173)에서

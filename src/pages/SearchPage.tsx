@@ -9,7 +9,7 @@ import { EditSheet } from '../components/EditSheet'
 import { BackIcon } from '../components/Icons'
 
 export function SearchPage({ onClose }: { onClose: () => void }) {
-  const { items, updateItem, removeItem, toggleDone, toggleStar } = useItems()
+  const { items, updateItem, requestDelete, toggleDone, toggleStar } = useItems()
   const [query, setQuery] = useState('')
   const [editing, setEditing] = useState<Item | null>(null)
 
@@ -74,7 +74,7 @@ export function SearchPage({ onClose }: { onClose: () => void }) {
                     onToggle={() => toggleDone(item.id, item.date)}
                     onStar={() => toggleStar(item.id)}
                     onEdit={() => setEditing(item)}
-                    onDelete={() => removeItem(item.id)}
+                    onDelete={() => requestDelete(item, item.date)}
                   />
                 </li>
               ))}
@@ -92,7 +92,7 @@ export function SearchPage({ onClose }: { onClose: () => void }) {
             setEditing(null)
           }}
           onDelete={() => {
-            removeItem(editing.id)
+            requestDelete(editing, editing.date)
             setEditing(null)
           }}
         />
