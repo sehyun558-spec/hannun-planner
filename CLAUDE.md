@@ -68,8 +68,12 @@
   - 서비스 워커는 `npm run build` 결과물에만 있음 → 오프라인 확인은 `npm run preview`(4173)에서
 - 배포: `.github/workflows/deploy.yml` (main에 push → GitHub Pages). README에 Netlify Drop 방법도 있음
 
+## 공개 주소
+- GitHub 저장소: https://github.com/sehyun558-spec/hannun-planner (main에 push하면 자동 배포)
+- 앱 주소: https://sehyun558-spec.github.io/hannun-planner/
+- Pages 설정(Source: GitHub Actions)은 사용자가 직접 켬. Claude 세션에서는 Pages API가 막혀 있음
+
 ## 다음에 할 수 있는 것 (아직 안 함, 사용자에게 먼저 물어보기)
-- GitHub 저장소 연결 후 push + Pages 공개
 - 이번 버전 제외 목록(서버, 로그인, 동기화, 공유, 위젯, 습관 트래커)은 계속 넣지 않기
 
 ## 진행 상황
