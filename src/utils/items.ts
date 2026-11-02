@@ -41,3 +41,13 @@ export function sortItems(items: Item[]): Item[] {
 export function newId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 }
+
+/** 검색용 글자 정리: 대소문자·띄어쓰기 무시 ("팀회의"로 "팀 회의"도 찾기) */
+const norm = (s: string) => s.toLowerCase().replace(/\s+/g, '')
+
+/** 제목이나 내용에 검색어가 들어 있는지 */
+export function matchesQuery(item: Item, query: string): boolean {
+  const q = norm(query)
+  if (!q) return true
+  return norm(item.title).includes(q) || norm(item.content).includes(q)
+}

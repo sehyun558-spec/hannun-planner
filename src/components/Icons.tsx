@@ -58,3 +58,22 @@ export const ClockIcon = ({ className }: P) => (
     <path d="M12 7v5l3 2" />
   </svg>
 )
+
+export const SearchIcon = ({ className }: P) => (
+  <svg {...base} className={className}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-4-4" />
+  </svg>
+)
+
+export const CloseIcon = ({ className }: P) => (
+  <svg {...base} className={className}>
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+)
+
+export const BackIcon = ({ className }: P) => (
+  <svg {...base} strokeWidth={2.5} className={className}>
+    <path d="M15 5l-7 7 7 7" />
+  </svg>
+)

@@ -7,11 +7,13 @@ import { UndoToast } from './components/UndoToast'
 import { TodayPage } from './pages/TodayPage'
 import { CalendarPage } from './pages/CalendarPage'
 import { MemoPage } from './pages/MemoPage'
+import { SearchPage } from './pages/SearchPage'
 import { useTheme } from './hooks/useTheme'
 import { useToday } from './hooks/useToday'
 
 function Shell() {
   const [tab, setTab] = useState<Tab>('today')
+  const [searching, setSearching] = useState(false)
   const today = useToday()
   const { saveFailed } = useItems()
   useTheme('system')
@@ -19,6 +21,7 @@ function Shell() {
   return (
     <div className="min-h-dvh bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
       <main
+        inert={searching}
         className="mx-auto max-w-md px-4"
         style={{
           paddingTop: 'calc(env(safe-area-inset-top) + 0.75rem)',
@@ -30,10 +33,11 @@ function Shell() {
             저장 공간이 부족해서 저장하지 못했어요. 설정에서 백업을 받아 두세요.
           </p>
         )}
-        {tab === 'today' && <TodayPage today={today} />}
+        {tab === 'today' && <TodayPage today={today} onSearch={() => setSearching(true)} />}
         {tab === 'calendar' && <CalendarPage today={today} />}
-        {tab === 'memo' && <MemoPage />}
+        {tab === 'memo' && <MemoPage today={today} />}
       </main>
+      {searching && <SearchPage onClose={() => setSearching(false)} />}
       <UndoToast />
       <BottomTabs tab={tab} onChange={setTab} />
     </div>

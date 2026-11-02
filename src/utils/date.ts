@@ -49,3 +49,10 @@ export function monthGrid(year: number, month: number): string[] {
     toDateStr(new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)),
   )
 }
+
+/** '11월 2일' (올해가 아니면 '2025년 11월 2일') */
+export function formatShortDate(s: string): string {
+  const d = fromDateStr(s)
+  const md = `${d.getMonth() + 1}월 ${d.getDate()}일`
+  return d.getFullYear() === new Date().getFullYear() ? md : `${d.getFullYear()}년 ${md}`
+}

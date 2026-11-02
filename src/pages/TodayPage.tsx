@@ -5,8 +5,9 @@ import { formatKoreanDate } from '../utils/date'
 import { isDoneOn, occursOn } from '../utils/items'
 import { QuickInput } from '../components/QuickInput'
 import { DayList } from '../components/DayList'
+import { SearchIcon } from '../components/Icons'
 
-export function TodayPage({ today }: { today: string }) {
+export function TodayPage({ today, onSearch }: { today: string; onSearch: () => void }) {
   const { items } = useItems()
 
   const left = useMemo(
@@ -17,7 +18,17 @@ export function TodayPage({ today }: { today: string }) {
   return (
     <div className="space-y-4">
       <header className="pt-2">
-        <h1 className="text-3xl font-bold">오늘</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">오늘</h1>
+          <button
+            type="button"
+            onClick={onSearch}
+            aria-label="통합 검색"
+            className="-mr-2 flex h-12 w-12 items-center justify-center rounded-2xl text-gray-600 active:bg-gray-100 dark:text-gray-300 dark:active:bg-gray-800"
+          >
+            <SearchIcon className="h-7 w-7" />
+          </button>
+        </div>
         <p className="mt-1 text-lg text-gray-500 dark:text-gray-400">
           {formatKoreanDate(today)}
           {left > 0 && <span className="text-blue-600 dark:text-blue-400"> · 할 일 {left}개 남음</span>}
