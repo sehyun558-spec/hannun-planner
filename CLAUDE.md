@@ -55,9 +55,18 @@
 - `src/components/` 재사용 블록 / `src/pages/` 화면
 - 확인: `npm run dev` 실행 후 Playwright(폰 크기 390×844)로 스크린샷·동작 점검, `npm run build`로 오류 검사
 
+## 설계 메모 (이미 정한 것)
+- 설정: `src/store/settings.ts` (theme, notify, lastBackup) — localStorage `hannun-planner:settings`
+- 백업 불러오기는 **덮어쓰기가 아니라 합치기**(같은 id면 updatedAt이 더 최근인 쪽). 데이터를 잃지 않게.
+- 백업 파일 이름은 영어(`hannun-planner-backup-YYYY-MM-DD.json`) — 한글 이름은 일부 브라우저에서 "download"로 바뀜
+- 알림: `useReminders`가 15초마다 확인, 시간 지나고 5분 안이면 알림. 이미 보낸 알림은 `hannun-planner:notified`에 기록.
+  권한 요청은 설정에서 스위치를 켤 때만. 앱 안 파란 배너는 권한과 상관없이 표시.
+- 반복 항목 완료는 날짜별(`doneDates`), 반복 항목 삭제는 모든 날짜에서 삭제
+- 메모 탭에서 쓴 메모도 쓴 날짜의 오늘 목록에 보임 (사용자 확인함)
+
 ## 진행 상황
 - [x] 1단계 뼈대 + 오늘 화면
 - [x] 2단계 달력
 - [x] 3단계 메모 + 검색
-- [ ] 4단계 반복·알림·설정·백업
+- [x] 4단계 반복·알림·설정·백업
 - [ ] 5단계 PWA + 마무리

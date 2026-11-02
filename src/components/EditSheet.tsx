@@ -1,9 +1,18 @@
 // 항목을 눌렀을 때 아래에서 올라오는 수정 창
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import type { Item } from '../types'
+import type { Item, Repeat } from '../types'
 import { KindPicker } from './KindPicker'
 import { StarIcon } from './Icons'
+import { fromDateStr, formatShortDate, WEEKDAYS } from '../utils/date'
+
+/** '매주 월요일마다', '매달 2일에', '11월 2일부터 매일' */
+function repeatHint(repeat: Repeat, date: string): string {
+  const d = fromDateStr(date)
+  if (repeat === 'weekly') return `매주 ${WEEKDAYS[d.getDay()]}요일마다`
+  if (repeat === 'monthly') return `매달 ${d.getDate()}일에`
+  return `${formatShortDate(date)}부터 매일`
+}
 
 interface Props {
   item: Item
@@ -14,8 +23,15 @@ interface Props {
   onClose: () => void
 }
 
+const REPEATS: { value: Repeat; label: string }[] = [
+  { value: 'none', label: '안 함' },
+  { value: 'daily', label: '매일' },
+  { value: 'weekly', label: '매주' },
+  { value: 'monthly', label: '매월' },
+]
+
 const field =
-  'h-14 w-full rounded-2xl border-2 border-gray-200 bg-white px-4 text-lg outline-none focus:border-blue-600 dark:border-gray-700 dark:bg-gray-900'
+  'h-14 w-full min-w-0 rounded-2xl border-2 border-gray-200 bg-white px-4 text-lg outline-none focus:border-blue-600 dark:border-gray-700 dark:bg-gray-900'
 
 export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
   const [draft, setDraft] = useState<Item>(item)
@@ -36,6 +52,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
       ...draft,
       title: title || draft.content.trim().split('\n')[0].slice(0, 40),
       time: draft.kind === 'memo' ? null : draft.time || null,
+      repeat: draft.kind === 'memo' ? 'none' : draft.repeat,
     })
   }
 
@@ -79,7 +96,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
         </label>
 
         <div className="flex gap-2">
-          <label className="block flex-1">
+          <label className="block min-w-0 flex-1">
             <span className="mb-1 block text-sm font-semibold text-gray-500 dark:text-gray-400">날짜</span>
             <input
               type="date"
@@ -89,7 +106,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
             />
           </label>
           {draft.kind !== 'memo' && (
-            <label className="block w-40">
+            <label className="block w-40 shrink-0">
               <span className="mb-1 flex justify-between text-sm font-semibold text-gray-500 dark:text-gray-400">
                 시간
                 {draft.time && (
@@ -107,6 +124,35 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
             </label>
           )}
         </div>
+
+        {draft.kind !== 'memo' && (
+          <div>
+            <span className="mb-1 block text-sm font-semibold text-gray-500 dark:text-gray-400">반복</span>
+            <div className="flex gap-1 rounded-2xl bg-gray-100 p-1 dark:bg-gray-800" role="radiogroup" aria-label="반복">
+              {REPEATS.map(({ value, label }) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={draft.repeat === value}
+                  onClick={() => set({ repeat: value })}
+                  className={`h-11 flex-1 rounded-xl text-base font-semibold ${
+                    draft.repeat === value
+                      ? 'bg-white text-blue-600 shadow-sm dark:bg-gray-950 dark:text-blue-400'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {draft.repeat !== 'none' && (
+              <p className="mt-1 px-1 text-sm text-gray-500 dark:text-gray-400">
+                {repeatHint(draft.repeat, draft.date)} 나타나요. 삭제하면 모든 날짜에서 지워져요.
+              </p>
+            )}
+          </div>
+        )}
 
         <label className="block">
           <span className="mb-1 block text-sm font-semibold text-gray-500 dark:text-gray-400">

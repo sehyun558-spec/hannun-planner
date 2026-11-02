@@ -25,7 +25,8 @@ interface ItemsApi {
   lastDeleted: Item | null
   undoDelete: () => void
   dismissUndo: () => void
-  replaceAll: (items: Item[]) => void
+  /** 백업 불러오기: 지금 데이터와 합쳐요 (같은 항목은 더 최근 것을 남김) */
+  mergeItems: (incoming: Item[]) => { added: number; updated: number }
   saveFailed: boolean
 }
 
@@ -104,10 +105,27 @@ export function ItemsProvider({ children }: { children: ReactNode }) {
 
   const dismissUndo = useCallback(() => setDeleted(null), [])
 
-  const replaceAll = useCallback((next: Item[]) => {
-    setItems(next)
-    setDeleted(null)
-  }, [])
+  const mergeItems = useCallback(
+    (incoming: Item[]) => {
+      const byId = new Map(items.map((it) => [it.id, it]))
+      let added = 0
+      let updated = 0
+      for (const it of incoming) {
+        const cur = byId.get(it.id)
+        if (!cur) {
+          byId.set(it.id, it)
+          added++
+        } else if (it.updatedAt > cur.updatedAt) {
+          byId.set(it.id, it)
+          updated++
+        }
+      }
+      if (added || updated) setItems([...byId.values()])
+      setDeleted(null)
+      return { added, updated }
+    },
+    [items],
+  )
 
   return (
     <ItemsContext.Provider
@@ -121,7 +139,7 @@ export function ItemsProvider({ children }: { children: ReactNode }) {
         lastDeleted: deleted?.item ?? null,
         undoDelete,
         dismissUndo,
-        replaceAll,
+        mergeItems,
         saveFailed,
       }}
     >
