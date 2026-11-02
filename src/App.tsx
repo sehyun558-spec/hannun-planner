@@ -31,7 +31,7 @@ function Shell() {
 
   // 새 디자인은 밝은 화면만 써요 (다크 모드는 색상표를 만든 뒤 settings.theme 로 다시 켤 수 있어요)
   useTheme('light')
-  useDayPart()
+  const dayPart = useDayPart()
   useReminders(items, settings.notify, (it) => setReminders((prev) => [...prev, it]))
   const closeReminders = useCallback(() => setReminders([]), [])
   const closeOverlay = useCallback(() => setOverlay(null), [])
@@ -58,6 +58,8 @@ function Shell() {
               onSearch={() => setOverlay('search')}
               onSettings={() => setOverlay('settings')}
               lastBackup={settings.lastBackup}
+              dayPart={dayPart}
+              showQuote={settings.showQuote}
               onBackedUp={() => updateSettings({ lastBackup: todayStr() })}
             />
           )}

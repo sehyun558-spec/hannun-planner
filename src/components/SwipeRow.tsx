@@ -103,7 +103,8 @@ export function SwipeRow({ label, onTap, onDelete, className = '', children }: P
         }}
         style={{
           transform: `translateX(${dx}px)`,
-          transition: dragging ? 'none' : 'transform 220ms ease-out',
+          // 배경색은 시간대가 바뀔 때 1초에 걸쳐 함께 바뀌어요
+          transition: dragging ? 'none' : 'transform 220ms ease-out, background-color var(--daypart-fade) ease',
           touchAction: 'pan-y',
           opacity: leaving ? 0.4 : 1,
         }}

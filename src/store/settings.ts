@@ -10,9 +10,11 @@ export interface Settings {
   notify: boolean
   /** 마지막으로 백업 파일을 저장한 날짜 'YYYY-MM-DD' */
   lastBackup: string | null
+  /** 오늘의 한 줄(명언) 보기 — 기본 켜짐 */
+  showQuote: boolean
 }
 
-const DEFAULTS: Settings = { theme: 'system', notify: false, lastBackup: null }
+const DEFAULTS: Settings = { theme: 'system', notify: false, lastBackup: null, showQuote: true }
 
 function load(): Settings {
   try {
@@ -21,6 +23,7 @@ function load(): Settings {
       theme: raw.theme === 'light' || raw.theme === 'dark' ? raw.theme : 'system',
       notify: raw.notify === true,
       lastBackup: typeof raw.lastBackup === 'string' ? raw.lastBackup : null,
+      showQuote: raw.showQuote !== false,
     }
   } catch {
     return DEFAULTS

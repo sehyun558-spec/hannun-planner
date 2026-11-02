@@ -33,6 +33,12 @@
 - **못 한 일 넘기기**: 지난 날 못 끝낸 할 일을 한 번에 오늘로 가져와요.
 - **백업 안내**: 오래 백업하지 않았으면 오늘 화면 아래에 조용히 알려줘요.
 
+### 오늘의 한 줄 · 시간대 배경 (v1.3)
+- **오늘의 한 줄**: 날짜 아래에 명언이나 응원 한 줄을 명조체(마루부리)로 보여줘요. 아침·낮·저녁마다 다른 말이고, 하루 동안 같은 시간대에는 같은 말이에요. 설정에서 끌 수 있어요.
+  - 명언을 더 넣고 싶으면 `src/data/quotes.ts` 파일에 한 줄씩 추가하면 돼요.
+- **시간대 배경**: 아침은 따뜻한 크림색, 낮은 오프화이트, 저녁은 차분한 회청색이에요.
+- **미리 보기**: 주소 끝에 `?daypart=morning` / `?daypart=day` / `?daypart=evening` 을 붙이면 그 시간대로 보여요.
+
 ---
 
 ## 1. 실행 방법 (컴퓨터에서)
@@ -157,7 +163,7 @@ PWA(설치·오프라인)는 **https 주소**에서만 동작해요. 아래 두 
 
 ## 만든 도구
 React, TypeScript, Vite, Tailwind CSS, vite-plugin-pwa
-글꼴: [Pretendard](https://github.com/orioncactus/pretendard) (SIL Open Font License 1.1)
+글꼴: [Pretendard](https://github.com/orioncactus/pretendard), [마루부리](https://hangeul.naver.com/fonts/search?f=maru) (둘 다 SIL Open Font License 1.1)
 
 ## 폴더 구조
 ```

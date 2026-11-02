@@ -14,14 +14,24 @@
   --line: #ece8e2; /* 구분선 */
   --sage: #4a7c6f; /* 포인트 색 (체크, 주요 버튼, 진행 표시에만) */
 
-  /* 시간 따라 바뀌는 배경 (오프화이트를 아주 살짝만 바꾼 값) */
-  --paper-morning: #fbf7f0; /* 아침 6~11시: 아주 옅게 따뜻하게 */
-  --paper-day: #faf8f5; /* 낮: 기본 */
-  --paper-evening: #f7f7f4; /* 저녁 18시~: 아주 옅게 차분하게 */
+  /* 시간 따라 바뀌는 배경 (흰 카드 #FFFFFF 는 그대로라서, 배경이 바뀌면 카드가 살짝 더 또렷해 보여요)
+     ※ index.html 의 첫 화면용 스크립트에도 같은 값이 있어요. 바꿀 때 같이 바꿔 주세요. */
+  --paper-morning: #fbf3e6; /* 아침 6~11시: 따뜻한 크림색 */
+  --paper-day: #faf8f5; /* 낮 11~18시: 기본 */
+  --paper-evening: #eff1f3; /* 저녁 18시~새벽: 차분한 옅은 회청색 */
+  /* 시간대가 바뀔 때 배경이 바뀌는 시간. 처음 열 때는 0초(바로 그 색),
+     첫 화면이 그려진 뒤 html.daypart-ready 가 붙으면 1초 */
+  --daypart-fade: 0s;
+}
+html.daypart-ready {
+  --daypart-fade: 1s;
 }
 
 html[data-daypart='morning'] {
   --paper: var(--paper-morning);
+}
+html[data-daypart='day'] {
+  --paper: var(--paper-day);
 }
 html[data-daypart='evening'] {
   --paper: var(--paper-evening);
@@ -43,10 +53,27 @@ html[data-daypart='evening'] {
 
   --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
     'Noto Sans KR', 'Malgun Gothic', system-ui, sans-serif;
+  /* 오늘의 한 줄(명언) 글자에만 쓰는 명조체: 마루부리 → Noto Serif KR → 기본 명조체 */
+  --font-quote: 'MaruBuri', 'Noto Serif KR', serif;
 }
 
 /* 나중에 다크 모드를 다시 켤 때 쓰는 표시 */
 @custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: 'MaruBuri';
+  src: url('/fonts/MaruBuri-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 명언 글자: 기울임·가짜 굵게 없이 보통 굵기로만 */
+.font-quote {
+  font-style: normal;
+  font-weight: 400;
+  font-synthesis: none;
+}
 
 @font-face {
   font-family: 'Pretendard Variable';
@@ -60,7 +87,7 @@ html {
   -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
   background-color: var(--paper);
-  transition: background-color 0.4s ease;
+  transition: background-color var(--daypart-fade) ease;
 }
 
 body {
@@ -70,7 +97,12 @@ body {
   font-size: 16px;
   line-height: 1.55;
   overscroll-behavior-y: none;
-  transition: background-color 0.4s ease;
+  transition: background-color var(--daypart-fade) ease;
+}
+
+/* 배경색을 쓰는 다른 곳(하단 탭, 목록 줄 등)도 함께 천천히 바뀌게 */
+.bg-paper {
+  transition: background-color var(--daypart-fade) ease;
 }
 
 ::placeholder {
@@ -137,8 +169,8 @@ textarea:focus-visible {
     opacity: 0;
     transform: translateY(6px);
   }
-  15%,
-  85% {
+  8%,
+  90% {
     opacity: 1;
     transform: translateY(0);
   }
@@ -148,7 +180,7 @@ textarea:focus-visible {
   }
 }
 .softpop {
-  animation: softpop 2.2s ease forwards;
+  animation: softpop 3.6s ease forwards; /* 명언까지 읽을 수 있게: 나타나기·사라지기는 각 0.3초쯤 */
 }
 
 @keyframes fadein {

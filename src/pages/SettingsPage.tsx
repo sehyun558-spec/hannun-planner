@@ -137,6 +137,33 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
           <h1 className="text-[28px] font-light tracking-tight">설정</h1>
         </header>
 
+        <Section title="오늘 화면">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={settings.showQuote}
+            onClick={() => onChange({ showQuote: !settings.showQuote })}
+            className="flex min-h-16 w-full items-center justify-between gap-4 rounded-2xl border border-line bg-card px-5 py-4 text-left"
+          >
+            <span>
+              <span className="block text-base font-semibold">오늘의 한 줄 보기</span>
+              <span className="mt-0.5 block text-[13px] text-muted">날짜 아래와 완료 축하에 짧은 명언을 보여줘요</span>
+            </span>
+            <span
+              className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${
+                settings.showQuote ? 'bg-sage' : 'bg-line'
+              }`}
+              aria-hidden
+            >
+              <span
+                className={`absolute top-1 h-5 w-5 rounded-full bg-card transition-all duration-200 ${
+                  settings.showQuote ? 'left-6' : 'left-1'
+                }`}
+              />
+            </span>
+          </button>
+        </Section>
+
         <Section title="알림">
           <button
             type="button"
@@ -209,7 +236,7 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
               저장된 항목: 할 일 {count('todo')} · 일정 {count('event')} · 메모 {count('memo')}
             </p>
           </div>
-          <p className="pt-2 text-center text-xs text-muted">한눈 플래너 v1.2</p>
+          <p className="pt-2 text-center text-xs text-muted">한눈 플래너 v1.3</p>
         </Section>
       </div>
     </div>

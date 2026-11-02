@@ -5,6 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <link rel="preload" href="./fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="theme-color" content="#faf8f5" />
+    <!-- 첫 화면이 그려지기 전에 시간대 배경을 정해요 (색 값은 src/index.css 의 시간대 배경과 같아요) -->
+    <script>
+      ;(function () {
+        try {
+          var v = new URLSearchParams(location.search).get('daypart')
+          var h = new Date().getHours()
+          var d = v === 'morning' || v === 'day' || v === 'evening' ? v : h >= 6 && h < 11 ? 'morning' : h >= 11 && h < 18 ? 'day' : 'evening'
+          document.documentElement.setAttribute('data-daypart', d)
+          var c = { morning: '#fbf3e6', day: '#faf8f5', evening: '#eff1f3' }[d]
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', c)
+        } catch (e) {}
+      })()
+    </script>
     <meta name="description" content="일정, 할 일, 메모를 한눈에. 광고 없고 내 폰에만 저장되는 플래너" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <!-- 아이폰 홈 화면 설치용 -->

@@ -12,6 +12,9 @@ import { ProgressRing } from '../components/ProgressRing'
 import { CheerToast } from '../components/CheerToast'
 import { CarryOverBar } from '../components/CarryOverBar'
 import { BackupNudge } from '../components/BackupNudge'
+import { DailyQuote } from '../components/DailyQuote'
+import { cheerQuote, quoteOfDay } from '../data/quotes'
+import type { DayPart } from '../hooks/useDayPart'
 import { SearchIcon, SettingsIcon, StarIcon } from '../components/Icons'
 
 interface Props {
@@ -21,9 +24,13 @@ interface Props {
   /** 마지막으로 백업한 날 (백업 안내용) */
   lastBackup: string | null
   onBackedUp: () => void
+  /** 지금 시간대 (오늘의 한 줄 고르기용) */
+  dayPart: DayPart
+  /** 설정의 "오늘의 한 줄 보기" */
+  showQuote: boolean
 }
 
-export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp }: Props) {
+export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp, dayPart, showQuote }: Props) {
   const { items, toggleDone, toggleStar, updateItem, requestDelete } = useItems()
   const [editing, setEditing] = useState<Item | null>(null)
   const [cheer, setCheer] = useState(false)
@@ -79,6 +86,7 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp 
             </span>
           )}
         </div>
+        {showQuote && <DailyQuote quote={quoteOfDay(today, dayPart)} />}
       </header>
 
       {/* 어제(지난 날) 못 한 일 넘기기 */}
@@ -135,7 +143,9 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp 
 
       <p className="pt-4 text-center text-xs text-muted">광고 없고, 데이터는 이 기기에만 저장됩니다</p>
 
-      {cheer && <CheerToast onDone={() => setCheer(false)} />}
+      {cheer && (
+        <CheerToast quote={showQuote ? cheerQuote(today, dayPart) : undefined} onDone={() => setCheer(false)} />
+      )}
 
       {editing && (
         <EditSheet

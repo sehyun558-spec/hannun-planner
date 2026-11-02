@@ -43,9 +43,17 @@
 - 색은 `src/index.css`의 색상표에서만 가져오기. Tailwind 기본 색은 꺼 두었음(`--color-*: initial`)
   - 배경 `paper` #FAF8F5 / 카드·입력칸 `card` #FFFFFF / 글자 `ink` #2B2B2B / 보조 `muted` #8A8680 / 선 `line` #ECE8E2
   - 포인트 `sage` #4A7C6F 는 **체크 표시, 주요 버튼, 진행 표시에만**
-  - 시간대 배경: 아침(6~11시) #FBF7F0, 낮 #FAF8F5, 저녁(18시~) #F7F7F4 (`useDayPart` → `html[data-daypart]`)
+  - 시간대 배경: 아침(6~11시) #FBF3E6, 낮 #FAF8F5, 저녁(18시~새벽) #EFF1F3 (`useDayPart` → `html[data-daypart]`)
+    - 색 값은 index.css 와 index.html(첫 화면용 스크립트) 두 곳에 있음 → 바꿀 때 같이
+    - 바뀔 때 1초 페이드(`--daypart-fade`). 처음 열 때는 0초, 첫 화면 뒤 `html.daypart-ready`가 붙으면 1초
+    - 미리 보기: 주소에 `?daypart=morning|day|evening` (명언도 그 시간대 것). 평소에는 실제 시간
+    - 보조 글자(#8A8680) 대비는 세 배경 모두 3.2~3.4 (흰색에서도 최대 3.6). 사용자가 글자색 유지 결정
 - 그림자·그라데이션 금지. 얇은 선과 여백으로 구분
 - 글꼴 Pretendard(앱 안에 `public/fonts/` 로 포함, 오프라인 OK). 화면 제목 28px 얇게(font-light), 본문 16px
+- 명언(오늘의 한 줄)만 명조체 `font-quote`: 마루부리 Regular(`public/fonts/MaruBuri-Regular.woff2`, OFL) → Noto Serif KR → serif. 기울임 없음
+- 오늘의 한 줄: `src/data/quotes.ts`(아침·낮·저녁 각 30개+, 위인의 말은 author, 직접 쓴 문구는 author 없음).
+  날짜+시간대로 고름(`quoteOfDay`), 날짜·진행 표시 아래 15px muted 줄간격 1.6 두 줄까지, 작가 12px "— 이름".
+  완료 축하(CheerToast, 3.6초)에도 짧은 명언(`cheerQuote`). 설정 "오늘의 한 줄 보기"(settings.showQuote, 기본 켜짐)가 둘 다 켜고 끔
 - 모서리: 카드 16px(rounded-2xl), 버튼 12px(rounded-xl). 누르는 곳 최소 44px
 - 애니메이션 0.2~0.4초, `prefers-reduced-motion`이면 끔
 - 특색: 오늘의 한 가지(별 붙인 오늘 할 일 중 첫 번째), 원형 진행 표시 + "오늘도 잘 해냈어요", 체크 펜 긋기·줄 긋기(`.check-path`, `.strike`), 짧은 진동(`haptic`), 다정한 빈 화면 문구
@@ -110,3 +118,5 @@
 - [x] 4단계 반복·알림·설정·백업
 - [x] 5단계 PWA + 마무리 (v1.0.0)
 - [x] 디자인 개편 "특색 있는 미니멀 화이트" (v1.1.0)
+- [x] 캘린더 추가·반복 삭제 선택·지운 항목 보호·백업 안내 (v1.2.0)
+- [x] 오늘의 한 줄(명언, 마루부리) + 시간대 배경 진하게·미리 보기 (v1.3.0)
