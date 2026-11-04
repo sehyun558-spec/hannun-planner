@@ -146,6 +146,7 @@
 - GitHub 저장소: https://github.com/sehyun558-spec/hannun-planner (main에 push하면 자동 배포)
 - 앱 주소: https://sehyun558-spec.github.io/hannun-planner/
 - Pages 설정(Source: GitHub Actions)은 사용자가 직접 켬. Claude 세션에서는 Pages API가 막혀 있음
+- 배포가 deploy-pages 단계에서 "updating_pages"로 10분 멈춘 뒤 실패하면: 같은 실행 재시도(rerun)는 같은 커밋 번호라 계속 막힐 수 있음 → 새 커밋을 올려 새 배포로 시도 (2026-11-04 v1.8.0 때 겪음)
 
 ## 다음에 할 수 있는 것 (아직 안 함, 사용자에게 먼저 물어보기)
 - 이번 버전 제외 목록(서버, 로그인, 동기화, 공유, 위젯, 습관 트래커)은 계속 넣지 않기
