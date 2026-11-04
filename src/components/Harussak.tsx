@@ -2,7 +2,8 @@
 // - 오늘 완료 비율에 따라 자라요: 0% 새싹(1) / 1~49% 잎(2) / 50~99% 꽃봉오리(3) / 100% 꽃(4)
 // - 단계가 바뀌면 통 튀어 오르고, 할 일을 체크하면 하늘색 물방울이 톡 떨어져요
 // - 누르면 1.5초 동안 간지러워하며 흔들리고, 작은 말풍선으로 한마디 해요
-// - 밤 11시~새벽 5시에는 졸린 하루싹, 오랜만에 오면 "왔다!" 하고 한 번 반겨요
+// - 밤 11시~새벽 5시에는 졸린 하루싹(체크하면 2초 깨어나 자란 모습, 다 끝낸 날은 밤에도 꽃)
+// - 오랜만에 오면 "왔다!" 하고 한 번 반겨요
 import { useEffect, useRef, useState } from 'react'
 import { harussakImg as img, harussakStage } from '../utils/harussak'
 
@@ -11,6 +12,7 @@ const TICKLE = img('tickle')
 const TICKLE_MS = 1500
 const TICKLE_LINES = ['간지러워!', '오늘 하나만 같이 해볼까?', '천천히 해도 돼', '물 고마워']
 const WELCOME_MS = 2500
+const AWAKE_MS = 2000 // 밤에 체크하면 잠깐 깨어나 있는 시간
 
 // 그림이 바뀔 때 깜빡이지 않게, 앱이 켜질 때 미리 불러와 둬요
 const SLEEPY = img('sleepy')
@@ -26,7 +28,7 @@ if (typeof window !== 'undefined') {
 interface Props {
   done: number
   total: number
-  /** 밤 11시~새벽 5시: 졸린 하루싹 */
+  /** 밤 11시~새벽 5시이고 아직 남은 일이 있을 때: 졸린 하루싹 (체크하면 잠깐 깨어나요) */
   night?: boolean
   /** 오랜만에 왔으면 "왔다!" 한 번 (다 보여주면 onWelcomed 호출) */
   welcome?: boolean
@@ -37,6 +39,7 @@ export function Harussak({ done, total, night = false, welcome = false, onWelcom
   const stage = harussakStage(done, total)
   const [bounce, setBounce] = useState(welcome ? 1 : 0) // 숫자가 바뀔 때마다 튀어 오르기
   const [drop, setDrop] = useState(0) // 숫자가 바뀔 때마다 물방울
+  const [awake, setAwake] = useState(0) // 밤에 잠깐 깨어 있는 중 (0이면 아님)
   const [tickle, setTickle] = useState<{ line: string; n: number } | null>(null)
   const prev = useRef<{ stage: number; done: number } | null>(null)
   const lastLine = useRef('')
@@ -47,8 +50,22 @@ export function Harussak({ done, total, night = false, welcome = false, onWelcom
     prev.current = { stage, done }
     if (!p) return
     if (stage !== p.stage) setBounce((b) => b + 1)
-    if (done > p.done) setDrop((d) => d + 1)
-  }, [stage, done])
+    if (done > p.done) {
+      setDrop((d) => d + 1)
+      // 자고 있을 때 체크하면 잠깐 깨어나서 자란 모습을 보여주고 통 튀어요
+      if (night) {
+        setAwake((a) => a + 1)
+        if (stage === p.stage) setBounce((b) => b + 1)
+      }
+    }
+  }, [stage, done, night])
+
+  // 깨어난 하루싹은 2초 뒤에 다시 잠들어요
+  useEffect(() => {
+    if (!awake) return
+    const t = setTimeout(() => setAwake(0), AWAKE_MS)
+    return () => clearTimeout(t)
+  }, [awake])
 
   // 오랜만에 왔으면 "왔다!" 말풍선을 2.5초 동안 한 번만
   const [greeting, setGreeting] = useState(welcome)
@@ -93,7 +110,7 @@ export function Harussak({ done, total, night = false, welcome = false, onWelcom
           style={{ transformOrigin: '50% 85%' }}
         >
           <img
-            src={tickle ? TICKLE : night ? SLEEPY : STAGES[stage]}
+            src={tickle ? TICKLE : night && !awake ? SLEEPY : STAGES[stage]}
             alt=""
             width={56}
             height={56}

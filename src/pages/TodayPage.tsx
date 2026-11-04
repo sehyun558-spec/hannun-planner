@@ -44,6 +44,8 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
   )
   const total = checkable.length
   const done = checkable.filter((it) => isDoneOn(it, today)).length
+  // 밤(11시~5시)에는 졸린 하루싹. 단, 오늘 할 일을 다 끝냈으면 밤에도 꽃이 피어 있어요
+  const sleepy = night && !(total > 0 && done >= total)
 
   // 오늘의 한 가지: 별(☆)을 붙인 오늘 할 일 중 첫 번째 (아직 안 끝난 것을 먼저)
   const focus = useMemo(() => {
@@ -81,7 +83,7 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
         </div>
         <div className="flex items-center gap-2.5 text-[15px] text-muted">
           {/* 하루싹: 진행 표시 대신, 오늘 끝낸 만큼 자라요 */}
-          <Harussak done={done} total={total} night={night} welcome={welcome} onWelcomed={onWelcomed} />
+          <Harussak done={done} total={total} night={sleepy} welcome={welcome} onWelcomed={onWelcomed} />
           <span>{formatKoreanDate(today)}</span>
           {total > 0 && (
             <span className="text-ink" aria-label={`할 일 ${total}개 중 ${done}개 완료`}>
@@ -91,8 +93,8 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
         </div>
         {/* 하루싹 한마디 (설정에서 끌 수 있어요) */}
         {showQuote && (
-          <p className="font-hand text-[18px] leading-[1.6] text-muted" aria-label={`하루싹 한마디: ${night ? '이제 자도 돼' : harussakLine(done, total)}`}>
-            {night ? '이제 자도 돼' : harussakLine(done, total)}
+          <p className="font-hand text-[18px] leading-[1.6] text-muted" aria-label={`하루싹 한마디: ${sleepy ? '이제 자도 돼' : harussakLine(done, total)}`}>
+            {sleepy ? '이제 자도 돼' : harussakLine(done, total)}
           </p>
         )}
       </header>
