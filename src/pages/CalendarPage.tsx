@@ -3,11 +3,9 @@ import { useMemo, useRef, useState } from 'react'
 import type { PointerEvent } from 'react'
 import { useItems } from '../store/ItemsContext'
 import { formatKoreanDate, fromDateStr, monthGrid, WEEKDAYS } from '../utils/date'
-import { isDoneOn, occursOn } from '../utils/items'
+import { dayMark, harussakImg } from '../utils/harussak'
 import { QuickInput } from '../components/QuickInput'
 import { DayList } from '../components/DayList'
-
-type DotState = 'none' | 'open' | 'done'
 
 export function CalendarPage({ today }: { today: string }) {
   const { items } = useItems()
@@ -19,17 +17,19 @@ export function CalendarPage({ today }: { today: string }) {
 
   const days = useMemo(() => monthGrid(view.y, view.m), [view])
 
-  // 날짜별 점: 남은 일이 있으면 파란 점, 모두 끝났으면 회색 점
-  const dots = useMemo(() => {
-    const map = new Map<string, DotState>()
-    for (const day of days) {
-      const list = items.filter((it) => occursOn(it, day))
-      if (list.length === 0) continue
-      const open = list.some((it) => it.kind === 'memo' || !isDoneOn(it, day))
-      map.set(day, open ? 'open' : 'done')
-    }
-    return map
-  }, [days, items])
+  // 날짜별 작은 하루싹: 전부 끝낸 날은 꽃, 일부만 한 날은 새싹 (오늘 이후·기록 없는 날은 표시 없음)
+  const marks = useMemo(() => new Map(days.map((day) => [day, dayMark(items, day, today)])), [days, items, today])
+
+  // 이번 달(보고 있는 달) 핀 꽃 개수
+  const flowers = useMemo(
+    () =>
+      days.filter((day) => fromDateStr(day).getMonth() === view.m && marks.get(day) === 'flower').length,
+    [days, marks, view.m],
+  )
+  const isThisMonth = (() => {
+    const t = fromDateStr(today)
+    return t.getFullYear() === view.y && t.getMonth() === view.m
+  })()
 
   const moveMonth = (diff: number) =>
     setView(({ y, m }) => {
@@ -72,26 +72,27 @@ export function CalendarPage({ today }: { today: string }) {
 
   return (
     <div className="space-y-6">
-      <header className="flex items-center justify-between pt-4">
-        <h1 className="text-[28px] font-light tracking-tight">
-          {view.y}년 {view.m + 1}월
-        </h1>
-        <div className="flex items-center">
-          <button type="button" onClick={() => moveMonth(-1)} aria-label="이전 달" className={`${navBtn} text-3xl`}>
-            ‹
-          </button>
-          <button
-            type="button"
-            onClick={goToday}
-            aria-label="오늘로 이동"
-            className={`${navBtn} text-[15px] text-ink`}
-          >
-            오늘
-          </button>
-          <button type="button" onClick={() => moveMonth(1)} aria-label="다음 달" className={`${navBtn} text-3xl`}>
-            ›
-          </button>
+      <header className="pt-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-[28px] font-light tracking-tight">
+            {view.y}년 {view.m + 1}월
+          </h1>
+          <div className="flex items-center">
+            <button type="button" onClick={() => moveMonth(-1)} aria-label="이전 달" className={`${navBtn} text-3xl`}>
+              ‹
+            </button>
+            <button type="button" onClick={goToday} aria-label="오늘로 이동" className={`${navBtn} text-[15px] text-ink`}>
+              오늘
+            </button>
+            <button type="button" onClick={() => moveMonth(1)} aria-label="다음 달" className={`${navBtn} text-3xl`}>
+              ›
+            </button>
+          </div>
         </div>
+        {/* 이번 달 핀 꽃 (손글씨) */}
+        <p className="font-hand mt-0.5 text-[17px] text-muted">
+          {isThisMonth ? '이번 달' : `${view.m + 1}월에`} 핀 꽃 {flowers}송이
+        </p>
       </header>
 
       <div onPointerDown={onDown} onPointerUp={onUp} style={{ touchAction: 'pan-y' }} className="select-none">
@@ -106,15 +107,15 @@ export function CalendarPage({ today }: { today: string }) {
             const inMonth = d.getMonth() === view.m
             const isSel = day === selected
             const isToday = day === today
-            const dot = dots.get(day) ?? 'none'
+            const mark = marks.get(day) ?? 'none'
             return (
               <button
                 key={day}
                 type="button"
                 onClick={() => pick(day)}
-                aria-label={`${formatKoreanDate(day)}${dot !== 'none' ? ', 항목 있음' : ''}`}
+                aria-label={`${formatKoreanDate(day)}${mark === 'flower' ? ', 할 일을 다 끝낸 날' : mark === 'sprout' ? ', 할 일을 조금 한 날' : ''}`}
                 aria-pressed={isSel}
-                className="flex h-12 flex-col items-center justify-center gap-1"
+                className="flex h-14 flex-col items-center justify-start pt-0.5"
               >
                 <span
                   className={`flex h-9 w-9 items-center justify-center rounded-full text-base transition-colors duration-200 ${
@@ -129,13 +130,20 @@ export function CalendarPage({ today }: { today: string }) {
                 >
                   {d.getDate()}
                 </span>
-                <span
-                  className={`h-1 w-1 rounded-full ${
-                    dot === 'open' ? 'bg-ink' : dot === 'done' ? 'bg-muted/50' : 'bg-transparent'
-                  }`}
-                  data-dot={dot}
-                  aria-hidden
-                />
+                {/* 날짜 아래 작은 하루싹 (20px) */}
+                <span className="flex h-5 w-5 items-center justify-center" data-mark={mark} aria-hidden>
+                  {mark !== 'none' && (
+                    <img
+                      src={harussakImg(mark === 'flower' ? '4' : '1')}
+                      alt=""
+                      width={20}
+                      height={20}
+                      draggable={false}
+                      className="pointer-events-none h-5 w-5 scale-[1.45] select-none"
+                      style={{ transformOrigin: '50% 70%' }}
+                    />
+                  )}
+                </span>
               </button>
             )
           })}
