@@ -8,12 +8,11 @@ import { QuickInput } from '../components/QuickInput'
 import { DayList } from '../components/DayList'
 import { EditSheet } from '../components/EditSheet'
 import { CheckCircle } from '../components/CheckCircle'
-import { ProgressRing } from '../components/ProgressRing'
+import { Harussak } from '../components/Harussak'
+import { harussakLine } from '../utils/harussak'
 import { CheerToast } from '../components/CheerToast'
 import { CarryOverBar } from '../components/CarryOverBar'
 import { BackupNudge } from '../components/BackupNudge'
-import { DailyQuote } from '../components/DailyQuote'
-import { quoteOfDay } from '../data/quotes'
 import { SearchIcon, SettingsIcon, StarIcon } from '../components/Icons'
 
 interface Props {
@@ -75,7 +74,8 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
           </div>
         </div>
         <div className="flex items-center gap-2.5 text-[15px] text-muted">
-          {total > 0 && <ProgressRing done={done} total={total} />}
+          {/* 하루싹: 진행 표시 대신, 오늘 끝낸 만큼 자라요 */}
+          <Harussak done={done} total={total} />
           <span>{formatKoreanDate(today)}</span>
           {total > 0 && (
             <span className="text-ink" aria-label={`할 일 ${total}개 중 ${done}개 완료`}>
@@ -83,7 +83,12 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
             </span>
           )}
         </div>
-        {showQuote && <DailyQuote quote={quoteOfDay(today)} />}
+        {/* 하루싹 한마디 (설정에서 끌 수 있어요) */}
+        {showQuote && (
+          <p className="font-hand text-[18px] leading-[1.6] text-muted" aria-label={`하루싹 한마디: ${harussakLine(done, total)}`}>
+            {harussakLine(done, total)}
+          </p>
+        )}
       </header>
 
       {/* 어제(지난 날) 못 한 일 넘기기 */}

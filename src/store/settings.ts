@@ -10,7 +10,7 @@ export interface Settings {
   notify: boolean
   /** 마지막으로 백업 파일을 저장한 날짜 'YYYY-MM-DD' */
   lastBackup: string | null
-  /** 오늘의 한 줄(명언) 보기 — 기본 켜짐 */
+  /** 날짜 아래 한 줄 보기 (지금은 하루싹 한마디, 예전 이름 그대로 저장) — 기본 켜짐 */
   showQuote: boolean
 }
 

@@ -33,6 +33,11 @@
 - **못 한 일 넘기기**: 지난 날 못 끝낸 할 일을 한 번에 오늘로 가져와요.
 - **백업 안내**: 오래 백업하지 않았으면 오늘 화면 아래에 조용히 알려줘요.
 
+### 하루싹 (v1.4)
+- 오늘 화면 날짜 옆의 크레파스 화분 **하루싹**이 오늘 끝낸 만큼 자라요. 새싹 → 잎 → 꽃봉오리 → 꽃.
+- 할 일을 체크하면 물방울이 톡 떨어지고, 하루싹을 누르면 간지러워하며 한마디 해요.
+- 날짜 아래에는 하루싹 한마디가 나와요. 설정에서 끌 수 있어요.
+
 ### 오늘의 한 줄 · 시간대 배경 (v1.3)
 - **오늘의 한 줄**: 날짜 아래에 명언이나 응원 한 줄을 명조체(마루부리)로 보여줘요. 하루에 하나라서, 같은 날에는 언제 열어도 같은 말이에요. 100개가 차례대로 나와서 100일 동안 겹치지 않아요. 설정에서 끌 수 있어요.
   - 명언을 더 넣고 싶으면 `src/data/quotes.ts` 파일에 한 줄씩 추가하면 돼요.
@@ -163,7 +168,7 @@ PWA(설치·오프라인)는 **https 주소**에서만 동작해요. 아래 두 
 
 ## 만든 도구
 React, TypeScript, Vite, Tailwind CSS, vite-plugin-pwa
-글꼴: [Pretendard](https://github.com/orioncactus/pretendard), [마루부리](https://hangeul.naver.com/fonts/search?f=maru) (둘 다 SIL Open Font License 1.1)
+글꼴: [Pretendard](https://github.com/orioncactus/pretendard), [마루부리](https://hangeul.naver.com/fonts/search?f=maru), [Gaegu](https://fonts.google.com/specimen/Gaegu) (모두 SIL Open Font License 1.1)
 
 ## 폴더 구조
 ```
