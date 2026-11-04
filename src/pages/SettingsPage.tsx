@@ -236,7 +236,7 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
               저장된 항목: 할 일 {count('todo')} · 일정 {count('event')} · 메모 {count('memo')}
             </p>
           </div>
-          <p className="pt-2 text-center text-xs text-muted">한눈 플래너 v1.4</p>
+          <p className="pt-2 text-center text-xs text-muted">한눈 플래너 v1.5</p>
         </Section>
       </div>
     </div>

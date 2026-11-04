@@ -1,8 +1,9 @@
-// 못 한 일 넘기기: 오늘 이전에 끝내지 못한 할 일이 있으면 조용히 한 줄로 물어봐요.
+// 못 한 일 넘기기: 오늘 이전에 끝내지 못한 할 일이 있으면, 바구니 든 하루싹이 조용히 물어봐요.
 // [가져오기] → 한 번에 오늘로 옮겨요. [✕] → 그날은 다시 안 보여요 (다음 날 또 남아 있으면 다시 물어봐요).
 import { useMemo, useState } from 'react'
 import { useItems } from '../store/ItemsContext'
 import { CloseIcon } from './Icons'
+import { harussakImg } from '../utils/harussak'
 
 const DISMISS_KEY = 'hannun-planner:carry-dismissed'
 
@@ -31,7 +32,7 @@ export function CarryOverBar({ today }: { today: string }) {
     const t = new Date(y, m - 1, d - 1)
     return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`
   })()
-  const when = overdue.every((it) => it.date === yesterday) ? '어제' : '지난 날'
+  const when = overdue.every((it) => it.date === yesterday) ? '어제' : '지난'
 
   const bringAll = () => overdue.forEach((it) => updateItem(it.id, { date: today }))
 
@@ -47,18 +48,32 @@ export function CarryOverBar({ today }: { today: string }) {
   return (
     <section
       aria-label="못 한 일 넘기기"
-      className="fadein flex items-center gap-2 rounded-2xl border border-line bg-card py-1.5 pr-1 pl-4"
+      className="fadein flex items-start gap-2 rounded-2xl border border-line bg-card py-2 pr-1 pl-2"
     >
-      <p className="min-w-0 flex-1 text-[15px] leading-snug break-keep">
-        {when} 못 한 일 {overdue.length}개, <span className="text-muted">오늘로 가져올까요?</span>
-      </p>
-      <button
-        type="button"
-        onClick={bringAll}
-        className="h-11 shrink-0 rounded-xl border border-line px-3.5 text-[15px] font-semibold text-ink transition-colors duration-200 active:bg-line"
-      >
-        가져오기
-      </button>
+      {/* 바구니 든 하루싹 */}
+      <img
+        src={harussakImg('basket')}
+        alt=""
+        width={48}
+        height={48}
+        draggable={false}
+        className="pointer-events-none mt-1 h-12 w-12 shrink-0 scale-[1.35] select-none"
+        style={{ transformOrigin: '50% 75%' }}
+      />
+      {/* 글은 넓게, 버튼은 그 아래 줄에 (작은 폰에서도 글이 너무 접히지 않게) */}
+      <div className="min-w-0 flex-1 pt-1.5">
+        <p className="font-hand text-[17px] leading-snug break-keep">{when} 거 내가 챙겨왔어. 오늘로 가져올까?</p>
+        <div className="mt-1.5 flex items-center justify-between gap-2">
+          <span className="text-[13px] text-muted">할 일 {overdue.length}개</span>
+          <button
+            type="button"
+            onClick={bringAll}
+            className="h-11 shrink-0 rounded-xl border border-line px-3.5 text-[15px] font-semibold text-ink transition-colors duration-200 active:bg-line"
+          >
+            가져오기
+          </button>
+        </div>
+      </div>
       <button
         type="button"
         onClick={dismiss}

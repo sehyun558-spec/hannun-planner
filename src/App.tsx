@@ -17,6 +17,7 @@ import { useTheme } from './hooks/useTheme'
 import { useToday } from './hooks/useToday'
 import { useReminders } from './hooks/useReminders'
 import { useDayPart } from './hooks/useDayPart'
+import { useWelcomeBack } from './hooks/useHarussakTime'
 import { todayStr } from './utils/date'
 
 type Overlay = 'search' | 'settings' | null
@@ -32,6 +33,7 @@ function Shell() {
   // 새 디자인은 밝은 화면만 써요 (다크 모드는 색상표를 만든 뒤 settings.theme 로 다시 켤 수 있어요)
   useTheme('light')
   useDayPart()
+  const { welcome, done: welcomed } = useWelcomeBack() // 3일 이상 만에 오면 하루싹이 반겨요
   useReminders(items, settings.notify, (it) => setReminders((prev) => [...prev, it]))
   const closeReminders = useCallback(() => setReminders([]), [])
   const closeOverlay = useCallback(() => setOverlay(null), [])
@@ -59,6 +61,8 @@ function Shell() {
               onSettings={() => setOverlay('settings')}
               lastBackup={settings.lastBackup}
               showQuote={settings.showQuote}
+              welcome={welcome}
+              onWelcomed={welcomed}
               onBackedUp={() => updateSettings({ lastBackup: todayStr() })}
             />
           )}

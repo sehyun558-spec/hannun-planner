@@ -13,3 +13,8 @@ export function harussakLine(done: number, total: number): string {
   if (done > 0) return '잘 하고 있어'
   return '오늘 하나만 같이 해볼까?'
 }
+
+/** 하루싹 그림 주소 (예: harussakImg('1'), harussakImg('sleepy')) */
+export function harussakImg(name: '1' | '2' | '3' | '4' | 'sleepy' | 'tickle' | 'pencil' | 'basket'): string {
+  return `${import.meta.env.BASE_URL}images/harussak-${name}.png`
+}

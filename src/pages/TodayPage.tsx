@@ -9,6 +9,8 @@ import { DayList } from '../components/DayList'
 import { EditSheet } from '../components/EditSheet'
 import { CheckCircle } from '../components/CheckCircle'
 import { Harussak } from '../components/Harussak'
+import { FocusSprout } from '../components/FocusSprout'
+import { useNight } from '../hooks/useHarussakTime'
 import { harussakLine } from '../utils/harussak'
 import { CheerToast } from '../components/CheerToast'
 import { CarryOverBar } from '../components/CarryOverBar'
@@ -24,9 +26,13 @@ interface Props {
   onBackedUp: () => void
   /** 설정의 "오늘의 한 줄 보기" */
   showQuote: boolean
+  /** 오랜만에 왔으면 하루싹이 "왔다!" 한 번 */
+  welcome: boolean
+  onWelcomed: () => void
 }
 
-export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp, showQuote }: Props) {
+export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp, showQuote, welcome, onWelcomed }: Props) {
+  const night = useNight() // 밤 11시~새벽 5시
   const { items, toggleDone, toggleStar, updateItem, requestDelete } = useItems()
   const [editing, setEditing] = useState<Item | null>(null)
   const [cheer, setCheer] = useState(false)
@@ -75,7 +81,7 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
         </div>
         <div className="flex items-center gap-2.5 text-[15px] text-muted">
           {/* 하루싹: 진행 표시 대신, 오늘 끝낸 만큼 자라요 */}
-          <Harussak done={done} total={total} />
+          <Harussak done={done} total={total} night={night} welcome={welcome} onWelcomed={onWelcomed} />
           <span>{formatKoreanDate(today)}</span>
           {total > 0 && (
             <span className="text-ink" aria-label={`할 일 ${total}개 중 ${done}개 완료`}>
@@ -85,8 +91,8 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
         </div>
         {/* 하루싹 한마디 (설정에서 끌 수 있어요) */}
         {showQuote && (
-          <p className="font-hand text-[18px] leading-[1.6] text-muted" aria-label={`하루싹 한마디: ${harussakLine(done, total)}`}>
-            {harussakLine(done, total)}
+          <p className="font-hand text-[18px] leading-[1.6] text-muted" aria-label={`하루싹 한마디: ${night ? '이제 자도 돼' : harussakLine(done, total)}`}>
+            {night ? '이제 자도 돼' : harussakLine(done, total)}
           </p>
         )}
       </header>
@@ -114,6 +120,8 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
                   <span className="mt-1 block text-[13px] text-muted">{formatKoreanTime(focus.time)}</span>
                 )}
               </button>
+              {/* 작은 하루싹: 할 일이 올라오면 쏙, 완료하면 꽃 */}
+              <FocusSprout key={focus.id} done={focusDone} />
               <button
                 type="button"
                 onClick={() => toggleStar(focus.id)}

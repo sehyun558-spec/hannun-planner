@@ -7,6 +7,7 @@ import { SearchBox } from '../components/SearchBox'
 import { MemoCard } from '../components/MemoCard'
 import { EditSheet } from '../components/EditSheet'
 import { PlusIcon } from '../components/Icons'
+import { harussakImg } from '../utils/harussak'
 
 export function MemoPage({ today }: { today: string }) {
   const { items, addItem, updateItem, requestDelete, toggleStar } = useItems()
@@ -55,6 +56,17 @@ export function MemoPage({ today }: { today: string }) {
 
       {memos.length === 0 ? (
         <div className="py-14 text-center">
+          {/* 메모가 하나도 없을 때: 연필 든 하루싹 */}
+          {!query && (
+            <img
+              src={harussakImg('pencil')}
+              alt=""
+              width={120}
+              height={120}
+              draggable={false}
+              className="pointer-events-none mx-auto -mt-6 mb-1 h-[120px] w-[120px] select-none"
+            />
+          )}
           <p className="text-base text-ink/80">
             {query ? `‘${query}’에 맞는 메모가 없어요` : '아직 적어둔 메모가 없어요'}
           </p>
