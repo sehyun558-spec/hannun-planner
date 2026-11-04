@@ -1,6 +1,7 @@
-// 설정(다크모드, 알림, 마지막 백업 날짜)을 이 기기에 저장해요.
+// 설정(다크모드, 알림, 마지막 백업 날짜, 하루싹 한마디, 색 테마)을 이 기기에 저장해요.
 import { useCallback, useState } from 'react'
 import type { ThemeMode } from '../hooks/useTheme'
+import { findTheme } from '../data/themes'
 
 const KEY = 'hannun-planner:settings'
 
@@ -12,9 +13,11 @@ export interface Settings {
   lastBackup: string | null
   /** 날짜 아래 한 줄 보기 (지금은 하루싹 한마디, 예전 이름 그대로 저장) — 기본 켜짐 */
   showQuote: boolean
+  /** 색 테마 아이디 (src/data/themes.ts). 다크 모드용 theme 과는 다른 칸이에요 — 기본 세이지 */
+  colorTheme: string
 }
 
-const DEFAULTS: Settings = { theme: 'system', notify: false, lastBackup: null, showQuote: true }
+const DEFAULTS: Settings = { theme: 'system', notify: false, lastBackup: null, showQuote: true, colorTheme: 'sage' }
 
 function load(): Settings {
   try {
@@ -24,6 +27,7 @@ function load(): Settings {
       notify: raw.notify === true,
       lastBackup: typeof raw.lastBackup === 'string' ? raw.lastBackup : null,
       showQuote: raw.showQuote !== false,
+      colorTheme: findTheme(raw.colorTheme).id,
     }
   } catch {
     return DEFAULTS

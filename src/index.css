@@ -16,7 +16,8 @@
   --drop: #9fd3f2; /* 하루싹 물방울 (하루싹 전용 예외 색) */
 
   /* 시간 따라 바뀌는 배경 (흰 카드 #FFFFFF 는 그대로라서, 배경이 바뀌면 카드가 살짝 더 또렷해 보여요)
-     ※ index.html 의 첫 화면용 스크립트에도 같은 값이 있어요. 바꿀 때 같이 바꿔 주세요. */
+     ※ 아래 값은 기본 테마(세이지)예요. 테마별 배경·포인트색은 src/data/themes.ts 에서 관리하고,
+       html[data-theme='…'] 로 덮어써요 (빌드할 때 자동으로 만들어짐). */
   --paper-morning: #fbf3e6; /* 아침 6~11시: 따뜻한 크림색 */
   --paper-day: #faf8f5; /* 낮 11~18시: 기본 */
   --paper-evening: #eff1f3; /* 저녁 18시~새벽: 차분한 옅은 회청색 */
@@ -188,6 +189,19 @@ body {
   line-height: 1.55;
   overscroll-behavior-y: none;
   transition: background-color var(--daypart-fade) ease;
+}
+
+/* 테마를 바꾸는 순간에는 앱 전체 색이 0.3초 동안 부드럽게 바뀌어요 */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    fill 0.3s ease,
+    stroke 0.3s ease !important;
 }
 
 /* 배경색을 쓰는 다른 곳(하단 탭, 목록 줄 등)도 함께 천천히 바뀌게 */
@@ -362,5 +376,11 @@ textarea:focus-visible {
   }
   .harussak-drop {
     display: none;
+  }
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: none !important;
   }
 }

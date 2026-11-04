@@ -2,6 +2,33 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import type { Plugin } from 'vite'
+import { DEFAULT_THEME_ID, firstPaintTable, themesCss } from './src/data/themes'
+
+/**
+ * 테마 목록(src/data/themes.ts) 하나로
+ *  - 테마별 색 덮어쓰기 CSS (import 'virtual:themes.css')
+ *  - index.html 첫 화면 스크립트의 색 표 (__THEME_TABLE__, __DEFAULT_THEME__ 자리)
+ * 를 자동으로 만들어 줘요. 테마를 추가할 때 다른 파일은 고치지 않아도 돼요.
+ */
+function hannunThemes(): Plugin {
+  const VIRTUAL = 'virtual:themes.css'
+  const RESOLVED = '\0virtual:themes.css'
+  return {
+    name: 'hannun-themes',
+    resolveId(id) {
+      if (id === VIRTUAL) return RESOLVED
+    },
+    load(id) {
+      if (id === RESOLVED) return themesCss()
+    },
+    transformIndexHtml(html) {
+      return html
+        .replace('__THEME_TABLE__', JSON.stringify(firstPaintTable()))
+        .replace('__DEFAULT_THEME__', JSON.stringify(DEFAULT_THEME_ID))
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -9,6 +36,7 @@ export default defineConfig({
   base: './',
   server: { host: true },
   plugins: [
+    hannunThemes(),
     react(),
     tailwindcss(),
     // PWA: 홈 화면 설치 + 인터넷 없이도 열리게 (서비스 워커가 앱 파일을 폰에 보관)

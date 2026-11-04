@@ -5,15 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <link rel="preload" href="./fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="theme-color" content="#faf8f5" />
-    <!-- 첫 화면이 그려지기 전에 시간대 배경을 정해요 (색 값은 src/index.css 의 시간대 배경과 같아요) -->
+    <!-- 첫 화면이 그려지기 전에 저장된 테마와 시간대 배경을 정해요 (깜빡임 방지)
+         색 표는 빌드할 때 src/data/themes.ts 에서 자동으로 채워져요 -->
     <script>
       ;(function () {
         try {
+          var table = __THEME_TABLE__
+          var theme = __DEFAULT_THEME__
+          try {
+            var saved = JSON.parse(localStorage.getItem('hannun-planner:settings') || '{}').colorTheme
+            if (saved && table[saved]) theme = saved
+          } catch (e) {}
           var v = new URLSearchParams(location.search).get('daypart')
           var h = new Date().getHours()
           var d = v === 'morning' || v === 'day' || v === 'evening' ? v : h >= 6 && h < 11 ? 'morning' : h >= 11 && h < 18 ? 'day' : 'evening'
-          document.documentElement.setAttribute('data-daypart', d)
-          var c = { morning: '#fbf3e6', day: '#faf8f5', evening: '#eff1f3' }[d]
+          var root = document.documentElement
+          root.setAttribute('data-theme', theme)
+          root.setAttribute('data-daypart', d)
+          var c = table[theme][{ morning: 0, day: 1, evening: 2 }[d]]
           document.querySelector('meta[name="theme-color"]').setAttribute('content', c)
         } catch (e) {}
       })()

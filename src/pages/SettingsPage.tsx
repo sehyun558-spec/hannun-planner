@@ -1,4 +1,4 @@
-// 설정 화면: 알림, 백업, 안내 (오늘 화면 오른쪽 위 ⚙️)
+// 설정 화면: 테마, 하루싹 한마디, 알림, 백업, 안내 (오늘 화면 오른쪽 위 ⚙️)
 // 화면 모드(다크 모드)는 새 디자인에서 잠시 숨겨 두었어요. 어두운 색상표를 만들면 다시 보여줄 수 있어요.
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
@@ -6,7 +6,8 @@ import type { Settings } from '../store/settings'
 import { useItems } from '../store/ItemsContext'
 import { exportBackup, readBackup } from '../store/backup'
 import { formatShortDate, todayStr } from '../utils/date'
-import { BackIcon } from '../components/Icons'
+import { BackIcon, CheckIcon } from '../components/Icons'
+import { THEMES } from '../data/themes'
 
 interface Props {
   settings: Settings
@@ -137,6 +138,51 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
           <h1 className="text-[28px] font-light tracking-tight">설정</h1>
         </header>
 
+        <Section title="테마">
+          {/* 테마 목록은 src/data/themes.ts 에서 관리해요 */}
+          <div className="grid grid-cols-6 gap-1" role="radiogroup" aria-label="테마">
+            {THEMES.map((t) => {
+              const selected = settings.colorTheme === t.id
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  aria-disabled={t.locked || undefined}
+                  disabled={t.locked}
+                  aria-label={`${t.name} 테마${t.locked ? ' (잠김)' : ''}`}
+                  onClick={() => !t.locked && onChange({ colorTheme: t.id })}
+                  className="flex min-w-0 flex-col items-center gap-1.5 rounded-xl py-1.5 disabled:opacity-50"
+                >
+                  {/* 견본: 배경색 원 안에 포인트색 작은 원 */}
+                  <span
+                    className={`relative flex h-11 w-11 items-center justify-center rounded-full border transition-colors duration-200 ${
+                      selected ? 'border-ink border-2' : 'border-line'
+                    }`}
+                    style={{ backgroundColor: t.day }}
+                  >
+                    <span
+                      className="flex h-5 w-5 items-center justify-center rounded-full"
+                      style={{ backgroundColor: t.accent }}
+                    >
+                      {selected && <CheckIcon className="h-3.5 w-3.5 text-card" />}
+                    </span>
+                    {t.locked && (
+                      <span className="absolute -right-0.5 -bottom-0.5 text-[12px]" aria-hidden>
+                        🔒
+                      </span>
+                    )}
+                  </span>
+                  <span className={`truncate text-[12px] ${selected ? 'font-semibold text-ink' : 'text-muted'}`}>
+                    {t.name}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </Section>
+
         <Section title="오늘 화면">
           <button
             type="button"
@@ -236,7 +282,7 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
               저장된 항목: 할 일 {count('todo')} · 일정 {count('event')} · 메모 {count('memo')}
             </p>
           </div>
-          <p className="pt-2 text-center text-xs text-muted">한눈 플래너 v1.6.1</p>
+          <p className="pt-2 text-center text-xs text-muted">한눈 플래너 v1.7</p>
         </Section>
       </div>
     </div>

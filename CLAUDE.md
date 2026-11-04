@@ -48,6 +48,16 @@
     - 바뀔 때 1초 페이드(`--daypart-fade`). 처음 열 때는 0초, 첫 화면 뒤 `html.daypart-ready`가 붙으면 1초
     - 미리 보기: 주소에 `?daypart=morning|day|evening` (배경만 바뀜). 평소에는 실제 시간
     - 보조 글자(#8A8680) 대비는 세 배경 모두 3.2~3.4 (흰색에서도 최대 3.6). 사용자가 글자색 유지 결정
+- **색 테마 (v1.7)**: 목록은 `src/data/themes.ts` **한 곳**(id, name, morning/day/evening 배경, accent=포인트, locked).
+  - 테마별로 바뀌는 건 `--paper-morning/day/evening` 과 `--sage` 4개뿐. 카드·글자·보조 글자·구분선·하루싹 그림·`--drop`·손글씨는 그대로
+  - `html[data-theme='id']` 로 덮어씀. 이 CSS 와 index.html 첫 화면 스크립트의 색 표(`__THEME_TABLE__`)는
+    vite.config.ts 의 `hannunThemes` 플러그인이 themes.ts 에서 **자동 생성** (`import 'virtual:themes.css'` in main.tsx)
+  - 저장: settings.colorTheme (기본 'sage'). 다크 모드용 settings.theme 과는 다른 칸. 없는/잠긴 아이디면 세이지(`findTheme`)
+  - 첫 화면 스크립트가 저장된 테마를 먼저 읽어 data-theme·상태 표시줄 색을 바로 적용(깜빡임 없음)
+  - 바꿀 때 `html.theme-switching` 동안 0.3초 색 전환(`useColorTheme`), 동작 줄이기면 즉시
+  - 설정 맨 위 "테마": 6열 견본(배경색 원 + 포인트 작은 원 + 이름), 선택 ✓, locked 면 🔒+선택 불가 (지금은 전부 열림)
+  - 벚꽃·하늘 포인트색은 흰 글씨 대비 3.2/3.6 — 사용자가 그대로 쓰기로 결정
+  - 앱 아이콘·manifest 색은 세이지 고정(설치된 앱 아이콘은 바꿀 수 없음)
 - 그림자·그라데이션 금지. 얇은 선과 여백으로 구분
 - 글꼴 Pretendard(앱 안에 `public/fonts/` 로 포함, 오프라인 OK). 화면 제목 28px 얇게(font-light), 본문 16px
 - 명언(오늘의 한 줄)만 명조체 `font-quote`: 마루부리 Regular(`public/fonts/MaruBuri-Regular.woff2`, OFL) → Noto Serif KR → serif. 기울임 없음
@@ -102,7 +112,7 @@
 - 확인: `npm run dev` 실행 후 Playwright(폰 크기 390×844)로 스크린샷·동작 점검, `npm run build`로 오류 검사
 
 ## 설계 메모 (이미 정한 것)
-- 설정: `src/store/settings.ts` (theme, notify, lastBackup) — localStorage `hannun-planner:settings`
+- 설정: `src/store/settings.ts` (theme=다크모드용, notify, lastBackup, showQuote, colorTheme) — localStorage `hannun-planner:settings`
 - 백업 불러오기는 **덮어쓰기가 아니라 합치기**(같은 id면 updatedAt이 더 최근인 쪽). 데이터를 잃지 않게.
 - 백업 파일 이름은 영어(`hannun-planner-backup-YYYY-MM-DD.json`) — 한글 이름은 일부 브라우저에서 "download"로 바뀜
 - 알림: `useReminders`가 15초마다 확인, 시간 지나고 5분 안이면 알림. 이미 보낸 알림은 `hannun-planner:notified`에 기록.
@@ -151,3 +161,4 @@
 - [x] 하루싹 확장: 한 가지 칸 새싹, 바구니 카드, 연필 빈 메모, 밤 졸림, 오랜만에 "왔다!" (v1.5.0)
 - [x] 달력에 하루싹: 날짜 아래 꽃/새싹, 이번 달 핀 꽃 개수 (v1.6.0)
 - [x] 밤에도 자라는 모습: 체크하면 잠깐 깨어남, 다 끝낸 밤엔 꽃 (v1.6.1)
+- [x] 테마 고르기 6종(세이지·쑥·벚꽃·하늘·밀크티·라벤더) (v1.7.0)
