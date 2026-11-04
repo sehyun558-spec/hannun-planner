@@ -4,6 +4,7 @@ import type { PointerEvent } from 'react'
 import { useItems } from '../store/ItemsContext'
 import { formatKoreanDate, fromDateStr, monthGrid, WEEKDAYS } from '../utils/date'
 import { dayMark, harussakImg } from '../utils/harussak'
+import { holidayName } from '../data/holidays'
 import { QuickInput } from '../components/QuickInput'
 import { DayList } from '../components/DayList'
 
@@ -97,8 +98,10 @@ export function CalendarPage({ today }: { today: string }) {
 
       <div onPointerDown={onDown} onPointerUp={onUp} style={{ touchAction: 'pan-y' }} className="select-none">
         <div className="grid grid-cols-7 pb-2 text-center text-xs text-muted">
-          {WEEKDAYS.map((w) => (
-            <span key={w}>{w}</span>
+          {WEEKDAYS.map((w, i) => (
+            <span key={w} className={i === 0 ? 'text-holiday' : i === 6 ? 'text-saturday' : ''}>
+              {w}
+            </span>
           ))}
         </div>
         <div className="grid grid-cols-7 gap-y-1" role="grid" aria-label="월간 달력">
@@ -108,24 +111,33 @@ export function CalendarPage({ today }: { today: string }) {
             const isSel = day === selected
             const isToday = day === today
             const mark = marks.get(day) ?? 'none'
+            // 빨간날: 일요일·공휴일(대체공휴일 포함) / 토요일은 파란색
+            const holiday = holidayName(day)
+            const red = d.getDay() === 0 || !!holiday
+            const blue = !red && d.getDay() === 6
+            const dayColor = red
+              ? inMonth
+                ? 'text-holiday'
+                : 'text-holiday/50'
+              : blue
+                ? inMonth
+                  ? 'text-saturday'
+                  : 'text-saturday/50'
+                : inMonth
+                  ? ''
+                  : 'text-muted/50'
             return (
               <button
                 key={day}
                 type="button"
                 onClick={() => pick(day)}
-                aria-label={`${formatKoreanDate(day)}${mark === 'flower' ? ', 할 일을 다 끝낸 날' : mark === 'sprout' ? ', 할 일을 조금 한 날' : ''}`}
+                aria-label={`${formatKoreanDate(day)}${holiday ? `, ${holiday}` : ''}${mark === 'flower' ? ', 할 일을 다 끝낸 날' : mark === 'sprout' ? ', 할 일을 조금 한 날' : ''}`}
                 aria-pressed={isSel}
                 className="flex h-14 flex-col items-center justify-start pt-0.5"
               >
                 <span
                   className={`flex h-9 w-9 items-center justify-center rounded-full text-base transition-colors duration-200 ${
-                    isSel
-                      ? 'bg-ink font-semibold text-card'
-                      : isToday
-                        ? 'border border-ink font-semibold'
-                        : inMonth
-                          ? ''
-                          : 'text-muted/50'
+                    isSel ? 'bg-ink font-semibold text-card' : `${dayColor} ${isToday ? 'border border-ink font-semibold' : ''}`
                   }`}
                 >
                   {d.getDate()}
@@ -153,6 +165,7 @@ export function CalendarPage({ today }: { today: string }) {
       <section className="space-y-5 border-t border-line pt-6">
         <h2 className="text-lg font-light">
           {formatKoreanDate(selected)}
+          {holidayName(selected) && <span className="text-holiday"> · {holidayName(selected)}</span>}
           {selected === today && <span className="text-muted"> · 오늘</span>}
         </h2>
         <QuickInput date={selected} />

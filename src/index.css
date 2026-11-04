@@ -14,6 +14,8 @@
   --line: #ece8e2; /* 구분선 */
   --sage: #4a7c6f; /* 포인트 색 (체크, 주요 버튼, 진행 표시에만) */
   --drop: #9fd3f2; /* 하루싹 물방울 (하루싹 전용 예외 색) */
+  --holiday: #b84a42; /* 달력 빨간날(일요일·공휴일) 숫자 전용 */
+  --saturday: #45689c; /* 달력 토요일 숫자 전용 */
 
   /* 시간 따라 바뀌는 배경 (흰 카드 #FFFFFF 는 그대로라서, 배경이 바뀌면 카드가 살짝 더 또렷해 보여요)
      ※ 아래 값은 기본 테마(세이지)예요. 테마별 배경·포인트색은 src/data/themes.ts 에서 관리하고,
@@ -51,6 +53,8 @@ html[data-daypart='evening'] {
   --color-line: var(--line);
   --color-sage: var(--sage);
   --color-drop: var(--drop);
+  --color-holiday: var(--holiday);
+  --color-saturday: var(--saturday);
   --color-transparent: transparent;
   --color-current: currentColor;
 
