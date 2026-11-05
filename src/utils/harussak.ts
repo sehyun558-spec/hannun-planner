@@ -13,7 +13,7 @@ export function harussakStage(done: number, total: number): number {
 
 /**
  * 달력 날짜 표시: 'flower'(그날 할 일을 전부 끝냄) / 'sprout'(일부만) / 'none'(표시 없음)
- * - 세는 것: 할 일 + 일정 (매일 반복과 메모는 빼요)
+ * - 세는 것: 할 일 + 일정 (반복 포함, 메모만 빼요)
  * - 오늘 이후 날짜, 할 일이 없던 날, 하나도 못 끝낸 날은 표시 없음 (혼내지 않게)
  */
 export function dayMark(
@@ -22,7 +22,8 @@ export function dayMark(
   today: string,
 ): 'flower' | 'sprout' | 'none' {
   if (day > today) return 'none'
-  const list = items.filter((it) => it.kind !== 'memo' && it.repeat !== 'daily' && occursOn(it, day))
+  // 오늘 화면의 "○개 중 ○개" 와 똑같이 세요 (매일 반복 할 일도 포함 — 빼면 그 체크를 취소해도 꽃이 남았어요)
+  const list = items.filter((it) => it.kind !== 'memo' && occursOn(it, day))
   if (list.length === 0) return 'none'
   const done = list.filter((it) => isDoneOn(it, day)).length
   if (done === list.length) return 'flower'
