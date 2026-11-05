@@ -303,18 +303,59 @@ textarea:focus-visible {
   animation: fadein 0.3s ease;
 }
 
+/* 아래에서 올라오는 창: 닫힐 때(useDragToClose)와 같은 곡선으로 화면 아래 끝에서 쭉 올라와요 */
 @keyframes sheetup {
   from {
-    transform: translateY(24px);
-    opacity: 0;
+    transform: translateY(100%);
   }
   to {
     transform: translateY(0);
-    opacity: 1;
   }
 }
 .sheetup {
-  animation: sheetup 0.3s ease-out;
+  animation: sheetup 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* 탭을 바꿀 때 새 화면이 살며시 나타나요
+   (움직임(transform)은 넣지 않아요: 메모 화면의 + 버튼처럼 떠 있는 버튼이 같이 흔들려요) */
+@keyframes tab-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.tab-in {
+  animation: tab-in 0.2s ease-out;
+}
+
+/* 달력 달 넘기기: 넘긴 방향에서 미끄러져 들어와요 */
+@keyframes month-next {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes month-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.month-next {
+  animation: month-next 0.25s ease-out;
+}
+.month-prev {
+  animation: month-prev 0.25s ease-out;
 }
 
 /* ── 하루싹 ─────────────────────────────── */

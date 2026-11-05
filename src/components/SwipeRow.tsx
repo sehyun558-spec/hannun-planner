@@ -13,12 +13,14 @@ interface Props {
   label: string
   onTap: () => void
   onDelete: () => void
+  /** 지울 때 줄이 접히며 사라질지 (반복 항목처럼 "이 날만/전체"를 물어보는 경우엔 false) */
+  collapse?: boolean
   /** 배경색까지 포함한 모양 (예: 'bg-paper ...') */
   className?: string
   children: (guard: TapGuard) => ReactNode
 }
 
-export function SwipeRow({ label, onTap, onDelete, className = '', children }: Props) {
+export function SwipeRow({ label, onTap, onDelete, collapse = true, className = '', children }: Props) {
   const [dx, setDx] = useState(0)
   const [dragging, setDragging] = useState(false)
   const [leaving, setLeaving] = useState(false)
@@ -58,6 +60,17 @@ export function SwipeRow({ label, onTap, onDelete, className = '', children }: P
       setLeaving(true)
       setDx(dx > 0 ? width : -width)
       setTimeout(() => {
+        const el = rowRef.current
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        if (collapse && el && !reduce) {
+          // 줄 높이를 0으로 접어서, 아래 줄들이 툭 튀지 않고 부드럽게 따라 올라오게 해요
+          el.style.height = `${el.offsetHeight}px`
+          void el.offsetHeight // 지금 높이를 먼저 확정
+          el.style.transition = 'height 200ms ease-out'
+          el.style.height = '0px'
+          setTimeout(onDelete, 200)
+          return
+        }
         onDelete()
         // 반복 항목에서 "취소"를 고르면 항목이 남아 있으니, 줄을 제자리로 돌려놔요
         setLeaving(false)

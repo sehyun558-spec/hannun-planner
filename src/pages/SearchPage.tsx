@@ -7,6 +7,7 @@ import { SearchBox } from '../components/SearchBox'
 import { ItemRow } from '../components/ItemRow'
 import { EditSheet } from '../components/EditSheet'
 import { BackIcon } from '../components/Icons'
+import { useBackClose } from '../hooks/useBackClose'
 
 export function SearchPage({ onClose }: { onClose: () => void }) {
   const { items, updateItem, requestDelete, toggleDone, toggleStar } = useItems()
@@ -20,6 +21,8 @@ export function SearchPage({ onClose }: { onClose: () => void }) {
       .filter((it) => matchesQuery(it, query))
       .sort((a, b) => b.date.localeCompare(a.date) || (a.time ?? '').localeCompare(b.time ?? ''))
   }, [items, query])
+
+  useBackClose(onClose) // 휴대폰 뒤로가기 → 이 화면만 닫기
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && !editing && onClose()

@@ -8,6 +8,7 @@ import { exportBackup, readBackup } from '../store/backup'
 import { formatShortDate, todayStr } from '../utils/date'
 import { BackIcon, CheckIcon } from '../components/Icons'
 import { THEMES } from '../data/themes'
+import { useBackClose } from '../hooks/useBackClose'
 
 interface Props {
   settings: Settings
@@ -47,6 +48,8 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [notifyNotice, setNotifyNotice] = useState<Notice>(null)
   const [backupNotice, setBackupNotice] = useState<Notice>(null)
+
+  useBackClose(onClose) // 휴대폰 뒤로가기 → 이 화면만 닫기
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()

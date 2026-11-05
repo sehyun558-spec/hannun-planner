@@ -2,6 +2,8 @@
 import { useEffect, useRef } from 'react'
 import { useItems } from '../store/ItemsContext'
 import { useDragToClose } from '../hooks/useDragToClose'
+import { useBackClose } from '../hooks/useBackClose'
+import { useScrollLock } from '../hooks/useScrollLock'
 import { formatShortDate, fromDateStr, WEEKDAYS } from '../utils/date'
 
 export function RepeatDeleteSheet() {
@@ -17,6 +19,8 @@ function Sheet() {
   const backdropRef = useRef<HTMLButtonElement>(null)
   const chosen = useRef<'one' | 'all' | 'cancel'>('cancel')
   const { close } = useDragToClose(sheetRef, backdropRef, () => resolvePendingDelete(chosen.current))
+  useBackClose(close)
+  useScrollLock()
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close()
@@ -37,7 +41,7 @@ function Sheet() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label="반복 항목 삭제">
-      <button ref={backdropRef} type="button" aria-label="닫기" onClick={close} className="fadein absolute inset-0 bg-ink/25" />
+      <button ref={backdropRef} type="button" aria-label="닫기" onClick={close} className="fadein absolute inset-0 touch-none bg-ink/25" />
       <div
         ref={sheetRef}
         className="sheetup relative w-full max-w-md space-y-4 rounded-t-2xl border-t border-line bg-paper px-5 will-change-transform"

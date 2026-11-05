@@ -76,6 +76,8 @@ export function QuickInput({ date, autoFocus }: { date: string; autoFocus?: bool
       <KindPicker
         value={kind}
         onChange={(k) => {
+          // 일정을 고를 때마다 "지금 기준 다음 정각"으로 (앱을 오래 켜 둬도 지난 시간이 안 나오게)
+          if (k === 'event' && kind !== 'event') setTime(nextHourStr())
           setKind(k)
           inputRef.current?.focus()
         }}

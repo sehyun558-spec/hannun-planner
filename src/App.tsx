@@ -40,6 +40,17 @@ function Shell() {
   const closeReminders = useCallback(() => setReminders([]), [])
   const closeOverlay = useCallback(() => setOverlay(null), [])
 
+  // 탭을 바꾸면 새 화면은 맨 위부터. 지금 탭을 한 번 더 누르면 맨 위로 부드럽게 올라가요
+  const changeTab = (next: Tab) => {
+    if (next === tab) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
+      return
+    }
+    setTab(next)
+    window.scrollTo(0, 0)
+  }
+
   return (
     <div className="min-h-dvh bg-paper text-ink">
       {/* 검색·설정 화면이 열려 있으면 뒤 화면은 눌리지 않게 */}
@@ -56,22 +67,25 @@ function Shell() {
               저장 공간이 부족해서 저장하지 못했어요. 설정에서 백업을 받아 두세요.
             </p>
           )}
-          {tab === 'today' && (
-            <TodayPage
-              today={today}
-              onSearch={() => setOverlay('search')}
-              onSettings={() => setOverlay('settings')}
-              lastBackup={settings.lastBackup}
-              showQuote={settings.showQuote}
-              welcome={welcome}
-              onWelcomed={welcomed}
-              onBackedUp={() => updateSettings({ lastBackup: todayStr() })}
-            />
-          )}
-          {tab === 'calendar' && <CalendarPage today={today} />}
-          {tab === 'memo' && <MemoPage today={today} />}
+          {/* 탭을 바꿀 때 살며시 나타나요 */}
+          <div key={tab} className="tab-in">
+            {tab === 'today' && (
+              <TodayPage
+                today={today}
+                onSearch={() => setOverlay('search')}
+                onSettings={() => setOverlay('settings')}
+                lastBackup={settings.lastBackup}
+                showQuote={settings.showQuote}
+                welcome={welcome}
+                onWelcomed={welcomed}
+                onBackedUp={() => updateSettings({ lastBackup: todayStr() })}
+              />
+            )}
+            {tab === 'calendar' && <CalendarPage today={today} />}
+            {tab === 'memo' && <MemoPage today={today} />}
+          </div>
         </main>
-        <BottomTabs tab={tab} onChange={setTab} />
+        <BottomTabs tab={tab} onChange={changeTab} />
       </div>
 
       {overlay === 'search' && <SearchPage onClose={closeOverlay} />}

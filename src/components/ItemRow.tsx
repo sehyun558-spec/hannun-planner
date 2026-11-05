@@ -30,6 +30,7 @@ export function ItemRow({ item, day, showDate, onToggle, onStar, onEdit, onDelet
       label={`${item.title} 수정하기`}
       onTap={onEdit}
       onDelete={onDelete}
+      collapse={item.repeat === 'none'}
       className="flex min-h-14 items-center gap-1 bg-paper py-1.5"
     >
       {(guard) => (

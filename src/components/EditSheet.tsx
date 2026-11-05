@@ -1,11 +1,14 @@
 // 항목을 눌렀을 때 아래에서 올라오는 수정 창
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { FormEvent } from 'react'
 import type { Item, Repeat } from '../types'
 import { KindPicker } from './KindPicker'
 import { CalendarIcon, StarIcon } from './Icons'
 import { fromDateStr, formatKoreanTime, formatShortDate, WEEKDAYS } from '../utils/date'
 import { useDragToClose } from '../hooks/useDragToClose'
+import { useBackClose } from '../hooks/useBackClose'
+import { useScrollLock } from '../hooks/useScrollLock'
 import { PickerField } from './PickerField'
 import { openInCalendar } from '../utils/ics'
 
@@ -51,6 +54,8 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
   const sheetRef = useRef<HTMLFormElement>(null)
   const backdropRef = useRef<HTMLButtonElement>(null)
   const { close } = useDragToClose(sheetRef, backdropRef, onClose)
+  useBackClose(close) // 휴대폰 뒤로가기 → 창만 닫기
+  useScrollLock() // 뒤 화면은 움직이지 않게
 
   // 뒤로가기 키(ESC)로 닫기
   useEffect(() => {
@@ -82,7 +87,8 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
       active ? 'border border-line bg-card font-semibold text-ink' : 'border border-transparent text-muted'
     }`
 
-  return (
+  // 화면 맨 위 층(body)에 바로 그려요. 목록 안에 그리면 줄 간격 여백 때문에 창이 화면 끝까지 닿지 않았어요
+  return createPortal(
     <div
       className="fixed inset-0 z-40 flex items-end justify-center"
       role="dialog"
@@ -94,7 +100,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
         type="button"
         aria-label="닫기"
         onClick={close}
-        className="fadein absolute inset-0 bg-ink/25"
+        className="fadein absolute inset-0 touch-none bg-ink/25"
       />
       <form
         ref={sheetRef}
@@ -275,6 +281,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
           </button>
         </div>
       </form>
-    </div>
+    </div>,
+    document.body,
   )
 }

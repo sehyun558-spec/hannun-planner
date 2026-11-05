@@ -16,6 +16,13 @@ export function CalendarPage({ today }: { today: string }) {
     return { y: d.getFullYear(), m: d.getMonth() }
   })
 
+  // 달을 넘긴 방향 (달력이 그쪽에서 미끄러져 들어와요). 처음 열 때는 움직이지 않아요
+  const [dir, setDir] = useState<'next' | 'prev' | null>(null)
+  const showMonth = (y: number, m: number) => {
+    setDir(y * 12 + m > view.y * 12 + view.m ? 'next' : y * 12 + m < view.y * 12 + view.m ? 'prev' : dir)
+    setView({ y, m })
+  }
+
   const days = useMemo(() => monthGrid(view.y, view.m), [view])
 
   // 날짜별 작은 하루싹: 전부 끝낸 날은 꽃, 일부만 한 날은 새싹 (오늘 이후·기록 없는 날은 표시 없음)
@@ -32,15 +39,14 @@ export function CalendarPage({ today }: { today: string }) {
     return t.getFullYear() === view.y && t.getMonth() === view.m
   })()
 
-  const moveMonth = (diff: number) =>
-    setView(({ y, m }) => {
-      const d = new Date(y, m + diff, 1)
-      return { y: d.getFullYear(), m: d.getMonth() }
-    })
+  const moveMonth = (diff: number) => {
+    const d = new Date(view.y, view.m + diff, 1)
+    showMonth(d.getFullYear(), d.getMonth())
+  }
 
   const goToday = () => {
     const d = fromDateStr(today)
-    setView({ y: d.getFullYear(), m: d.getMonth() })
+    showMonth(d.getFullYear(), d.getMonth())
     setSelected(today)
   }
 
@@ -48,7 +54,7 @@ export function CalendarPage({ today }: { today: string }) {
     if (justSwiped.current) return
     setSelected(day)
     const d = fromDateStr(day)
-    if (d.getMonth() !== view.m) setView({ y: d.getFullYear(), m: d.getMonth() })
+    if (d.getMonth() !== view.m) showMonth(d.getFullYear(), d.getMonth())
   }
 
   // 달력을 옆으로 밀면 이전/다음 달
@@ -104,7 +110,12 @@ export function CalendarPage({ today }: { today: string }) {
             </span>
           ))}
         </div>
-        <div className="grid grid-cols-7 gap-y-1" role="grid" aria-label="월간 달력">
+        <div
+          key={`${view.y}-${view.m}`}
+          className={`grid grid-cols-7 gap-y-1 ${dir ? `month-${dir}` : ''}`}
+          role="grid"
+          aria-label="월간 달력"
+        >
           {days.map((day) => {
             const d = fromDateStr(day)
             const inMonth = d.getMonth() === view.m
