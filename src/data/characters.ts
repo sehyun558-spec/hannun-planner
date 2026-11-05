@@ -71,9 +71,7 @@ export const CHARACTERS: Character[] = [
   {
     id: 'bomi',
     name: '봄이',
-    // 간지러워(tickle) 그림은 아직 없어서 활짝 핀 모습(4)으로 대신해요.
-    // public/images/bomi-tickle.png 를 넣으면 아래 { tickle: '4' } 만 지우면 돼요.
-    images: images('bomi', { tickle: '4' }),
+    images: images('bomi'),
     effect: 'petal',
     flower: '벚꽃',
     lines: {
