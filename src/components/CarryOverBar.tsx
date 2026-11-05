@@ -1,9 +1,9 @@
-// 못 한 일 넘기기: 오늘 이전에 끝내지 못한 할 일이 있으면, 바구니 든 하루싹이 조용히 물어봐요.
+// 못 한 일 넘기기: 오늘 이전에 끝내지 못한 할 일이 있으면, 바구니 든 캐릭터가 조용히 물어봐요.
 // [가져오기] → 한 번에 오늘로 옮겨요. [✕] → 그날은 다시 안 보여요 (다음 날 또 남아 있으면 다시 물어봐요).
 import { useMemo, useState } from 'react'
 import { useItems } from '../store/ItemsContext'
 import { CloseIcon } from './Icons'
-import { harussakImg } from '../utils/harussak'
+import { useCharacter } from '../hooks/useCharacter'
 
 const DISMISS_KEY = 'hannun-planner:carry-dismissed'
 
@@ -17,6 +17,7 @@ function loadDismissed(): string | null {
 
 export function CarryOverBar({ today }: { today: string }) {
   const { items, updateItem } = useItems()
+  const character = useCharacter()
   const [dismissedDay, setDismissedDay] = useState(loadDismissed)
 
   // 오늘보다 이전 날짜 + 끝내지 않은 할 일 (반복 할 일은 매일 다시 나오니까 빼요)
@@ -50,9 +51,9 @@ export function CarryOverBar({ today }: { today: string }) {
       aria-label="못 한 일 넘기기"
       className="fadein flex items-start gap-2 rounded-2xl border border-line bg-card py-2 pr-1 pl-2"
     >
-      {/* 바구니 든 하루싹 */}
+      {/* 바구니 든 캐릭터 */}
       <img
-        src={harussakImg('basket')}
+        src={character.images.basket}
         alt=""
         width={48}
         height={48}
@@ -62,7 +63,7 @@ export function CarryOverBar({ today }: { today: string }) {
       />
       {/* 글은 넓게, 버튼은 그 아래 줄에 (작은 폰에서도 글이 너무 접히지 않게) */}
       <div className="min-w-0 flex-1 pt-1.5">
-        <p className="font-hand text-[17px] leading-snug break-keep">{when} 거 내가 챙겨왔어. 오늘로 가져올까?</p>
+        <p className="font-hand text-[17px] leading-snug break-keep">{character.lines.carry(when)}</p>
         <div className="mt-1.5 flex items-center justify-between gap-2">
           <span className="text-[13px] text-muted">할 일 {overdue.length}개</span>
           <button

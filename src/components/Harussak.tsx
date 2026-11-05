@@ -1,29 +1,18 @@
-// 하루싹: 오늘 화면 날짜 옆의 크레파스 마스코트
-// - 오늘 완료 비율에 따라 자라요: 0% 새싹(1) / 1~49% 잎(2) / 50~99% 꽃봉오리(3) / 100% 꽃(4)
-// - 단계가 바뀌면 통 튀어 오르고, 할 일을 체크하면 하늘색 물방울이 톡 떨어져요
+// 오늘 화면 날짜 옆의 크레파스 마스코트 (지금 고른 캐릭터: 하루싹 또는 봄이 — src/data/characters.ts)
+// - 오늘 완료 비율에 따라 자라요: 0% → 1 / 1~49% → 2 / 50~99% → 3 / 100% → 4
+// - 단계가 바뀌면 통 튀어 오르고, 할 일을 체크하면 하루싹은 하늘색 물방울, 봄이는 벚꽃잎 한 장이 팔랑 떨어져요
 // - 누르면 1.5초 동안 간지러워하며 흔들리고, 작은 말풍선으로 한마디 해요
-// - 밤 11시~새벽 5시에는 졸린 하루싹(체크하면 2초 깨어나 자란 모습, 다 끝낸 날은 밤에도 꽃)
-// - 오랜만에 오면 "왔다!" 하고 한 번 반겨요
+// - 밤 11시~새벽 5시에는 졸린 모습(체크하면 2초 깨어나 자란 모습, 다 끝낸 날은 밤에도 꽃)
+// - 오랜만에 오면 "왔다!"(봄이는 "왔구나!") 하고 한 번 반겨요
+// (그림은 characters.ts 가 앱이 켜질 때 미리 불러와 둬서, 캐릭터를 바꿔도 깜빡이지 않아요)
 import { useEffect, useRef, useState } from 'react'
-import { harussakImg as img, harussakStage } from '../utils/harussak'
+import { harussakStage } from '../utils/harussak'
+import { useCharacter } from '../hooks/useCharacter'
 
-const STAGES = [img('1'), img('2'), img('3'), img('4')]
-const TICKLE = img('tickle')
 const TICKLE_MS = 1500
-const TICKLE_LINES = ['간지러워!', '오늘 하나만 같이 해볼까?', '천천히 해도 돼', '물 고마워']
 const WELCOME_MS = 2500
 const AWAKE_MS = 2000 // 밤에 체크하면 잠깐 깨어나 있는 시간
-
-// 그림이 바뀔 때 깜빡이지 않게, 앱이 켜질 때 미리 불러와 둬요
-const SLEEPY = img('sleepy')
-const ALL = [...STAGES, TICKLE, SLEEPY, img('pencil'), img('basket')]
-if (typeof window !== 'undefined') {
-  for (const src of ALL) {
-    const i = new Image()
-    i.decoding = 'async'
-    i.src = src
-  }
-}
+const STAGE_KEYS = ['1', '2', '3', '4'] as const
 
 interface Props {
   done: number
@@ -36,6 +25,8 @@ interface Props {
 }
 
 export function Harussak({ done, total, night = false, welcome = false, onWelcomed }: Props) {
+  const character = useCharacter()
+  const img = character.images
   const stage = harussakStage(done, total)
   const [bounce, setBounce] = useState(welcome ? 1 : 0) // 숫자가 바뀔 때마다 튀어 오르기
   const [drop, setDrop] = useState(0) // 숫자가 바뀔 때마다 물방울
@@ -89,7 +80,7 @@ export function Harussak({ done, total, night = false, welcome = false, onWelcom
 
   const onTap = () => {
     // 같은 말이 연달아 나오지 않게
-    const choices = TICKLE_LINES.filter((l) => l !== lastLine.current)
+    const choices = character.lines.tickle.filter((l) => l !== lastLine.current)
     const line = choices[Math.floor(Math.random() * choices.length)]
     lastLine.current = line
     setTickle((t) => ({ line, n: (t?.n ?? 0) + 1 }))
@@ -100,7 +91,7 @@ export function Harussak({ done, total, night = false, welcome = false, onWelcom
       <button
         type="button"
         onClick={onTap}
-        aria-label={`하루싹${night ? ' (졸려요)' : ''} (오늘 ${total}개 중 ${done}개 완료) 눌러서 간지럽히기`}
+        aria-label={`${character.name}${night ? ' (졸려요)' : ''} (오늘 ${total}개 중 ${done}개 완료) 눌러서 간지럽히기`}
         className="relative block h-14 w-14 rounded-xl"
       >
         {/* 튀기·흔들기는 key 가 바뀔 때마다 처음부터 다시 */}
@@ -110,7 +101,7 @@ export function Harussak({ done, total, night = false, welcome = false, onWelcom
           style={{ transformOrigin: '50% 85%' }}
         >
           <img
-            src={tickle ? TICKLE : night && !awake ? SLEEPY : STAGES[stage]}
+            src={tickle ? img.tickle : night && !awake ? img.sleepy : img[STAGE_KEYS[stage]]}
             alt=""
             width={56}
             height={56}
@@ -121,7 +112,15 @@ export function Harussak({ done, total, night = false, welcome = false, onWelcom
         </span>
       </button>
 
-      {drop > 0 && <span key={`drop-${drop}`} className="harussak-drop" aria-hidden />}
+      {/* 체크 효과: 하루싹은 물방울, 봄이는 벚꽃잎 (동작 줄이기면 숨김) */}
+      {drop > 0 &&
+        (character.effect === 'petal' ? (
+          <svg key={`petal-${drop}`} viewBox="0 0 20 24" className="bomi-petal" aria-hidden>
+            <path d="M10 23C4 19 0.5 12 2 6c0.8-3 4-4.5 6.2-2.3L10 6l1.8-2.3C14 1.5 17.2 3 18 6c1.5 6-2 13-8 17z" />
+          </svg>
+        ) : (
+          <span key={`drop-${drop}`} className="harussak-drop" aria-hidden />
+        ))}
 
       {(tickle || greeting) && (
         <span
@@ -129,7 +128,7 @@ export function Harussak({ done, total, night = false, welcome = false, onWelcom
           role="status"
           className="fadein font-hand absolute top-0 left-full z-10 ml-1 rounded-xl border border-line bg-card px-2.5 py-0.5 text-[16px] leading-snug whitespace-nowrap text-ink"
         >
-          {tickle ? tickle.line : '왔다!'}
+          {tickle ? tickle.line : character.lines.welcome}
         </span>
       )}
     </div>

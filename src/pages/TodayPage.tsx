@@ -11,7 +11,8 @@ import { CheckCircle } from '../components/CheckCircle'
 import { Harussak } from '../components/Harussak'
 import { FocusSprout } from '../components/FocusSprout'
 import { useNight } from '../hooks/useHarussakTime'
-import { harussakLine } from '../utils/harussak'
+import { characterLine } from '../data/characters'
+import { useCharacter } from '../hooks/useCharacter'
 import { CheerToast } from '../components/CheerToast'
 import { CarryOverBar } from '../components/CarryOverBar'
 import { BackupNudge } from '../components/BackupNudge'
@@ -33,6 +34,7 @@ interface Props {
 
 export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp, showQuote, welcome, onWelcomed }: Props) {
   const night = useNight() // 밤 11시~새벽 5시
+  const character = useCharacter() // 설정에서 고른 캐릭터 (하루싹·봄이)
   const { items, toggleDone, toggleStar, updateItem, requestDelete } = useItems()
   const [editing, setEditing] = useState<Item | null>(null)
   const [cheer, setCheer] = useState(false)
@@ -82,7 +84,7 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
           </div>
         </div>
         <div className="flex items-center gap-2.5 text-[15px] text-muted">
-          {/* 하루싹: 진행 표시 대신, 오늘 끝낸 만큼 자라요 */}
+          {/* 캐릭터(하루싹·봄이): 진행 표시 대신, 오늘 끝낸 만큼 자라요 */}
           <Harussak done={done} total={total} night={sleepy} welcome={welcome} onWelcomed={onWelcomed} />
           <span>{formatKoreanDate(today)}</span>
           {total > 0 && (
@@ -91,10 +93,10 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
             </span>
           )}
         </div>
-        {/* 하루싹 한마디 (설정에서 끌 수 있어요) */}
+        {/* 캐릭터 한마디 (설정에서 끌 수 있어요) */}
         {showQuote && (
-          <p className="font-hand text-[18px] leading-[1.6] text-muted" aria-label={`하루싹 한마디: ${sleepy ? '이제 자도 돼' : harussakLine(done, total)}`}>
-            {sleepy ? '이제 자도 돼' : harussakLine(done, total)}
+          <p className="font-hand text-[18px] leading-[1.6] text-muted" aria-label={`${character.name} 한마디: ${sleepy ? character.lines.night : characterLine(character, done, total)}`}>
+            {sleepy ? character.lines.night : characterLine(character, done, total)}
           </p>
         )}
       </header>

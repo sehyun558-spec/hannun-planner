@@ -14,6 +14,7 @@
   --line: #ece8e2; /* 구분선 */
   --sage: #4a7c6f; /* 포인트 색 (체크, 주요 버튼, 진행 표시에만) */
   --drop: #9fd3f2; /* 하루싹 물방울 (하루싹 전용 예외 색) */
+  --petal: #f6c3cf; /* 봄이 벚꽃잎 (봄이 전용 예외 색) */
   --holiday: #b84a42; /* 달력 빨간날(일요일·공휴일) 숫자 전용 */
   --saturday: #45689c; /* 달력 토요일 숫자 전용 */
 
@@ -78,10 +79,19 @@ html[data-daypart='evening'] {
 }
 
 /*
- * Gaegu 손글씨체 (OFL) — 하루싹 대사에 쓰는 글자가 든 조각 8개만 넣었어요.
+ * Gaegu 손글씨체 (OFL) — 캐릭터(하루싹·봄이) 대사에 쓰는 글자가 든 조각 11개만 넣었어요.
  * 대사를 바꿔서 새 글자가 생기면, @fontsource/gaegu 패키지의 400.css 에서
  * 그 글자가 든 조각(gaegu-숫자-400-normal.woff2)을 public/fonts/gaegu 에 더 넣고 아래 규칙도 추가해 주세요.
  */
+/* 봄이 대사 "활짝 폈다!" 의 '폈' 이 든 조각 (v1.9) */
+@font-face {
+  font-family: 'Gaegu';
+  src: url('/fonts/gaegu/gaegu-100-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+e8,U+2da,U+2160,U+2194,U+3054,U+3058,U+306d,U+3086,U+308d,U+30ac,U+30bb,U+30c4,U+30cd-30ce,U+30e2,U+3132,U+3146,U+3149,U+339d,U+4e3b,U+4f0a,U+4fdd,U+4fe1,U+5409,U+540c,U+5834,U+592a-592b,U+5b9a,U+5dde,U+5e0c,U+5e73,U+5f0f,U+60f3,U+653f,U+661f,U+662f,U+667a,U+683c,U+6b4c,U+6c11,U+767c,U+76ee,U+76f4,U+77f3,U+79d1,U+7a7a,U+7b2c,U+7d22,U+8207,U+8a00,U+8a71,U+9280,U+9580,U+958b,U+96c6,U+9762,U+98df,U+9ed1,U+ac2d,U+adc8,U+add3,U+af48,U+b014,U+b134-b135,U+b158,U+b2aa,U+b35f,U+b6a4,U+b9cf,U+bb63,U+bd23,U+be91,U+c29b,U+c3f4,U+c42c,U+c55c,U+c573,U+c58f,U+c78c,U+c7dd,U+c8f5,U+cad1,U+cc48,U+cf10,U+cf20,U+d03c,U+d07d,U+d2a0,U+d30e,U+d38d,U+d3a8,U+d3c8,U+d5e5,U+d5f9,U+d6e4,U+f90a,U+ff02,U+ff1c;
+}
 @font-face {
   font-family: 'Gaegu';
   src: url('/fonts/gaegu/gaegu-109-400-normal.woff2') format('woff2');
@@ -410,6 +420,26 @@ textarea:focus-visible {
   animation: harussak-drop 0.45s ease-in forwards;
 }
 
+/* 봄이: 할 일을 체크하면 연분홍 벚꽃잎 한 장이 좌우로 팔랑이며 봄이 쪽으로 떨어져요 (0.75초) */
+@keyframes bomi-petal {
+  0% { transform: translate(calc(-50% + 14px), -20px) rotate(-30deg); opacity: 0; }
+  12% { opacity: 1; }
+  32% { transform: translate(calc(-50% - 9px), -8px) rotate(25deg); }
+  55% { transform: translate(calc(-50% + 8px), 4px) rotate(-18deg); }
+  78% { transform: translate(calc(-50% - 4px), 14px) rotate(12deg); opacity: 1; }
+  100% { transform: translate(-50%, 22px) rotate(0deg); opacity: 0; }
+}
+.bomi-petal {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 11px;
+  height: 13px;
+  fill: var(--petal);
+  pointer-events: none;
+  animation: bomi-petal 0.75s ease-in-out forwards;
+}
+
 /* 폰 설정에서 "동작 줄이기"를 켠 사람에게는 움직임을 꺼요 */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -419,7 +449,8 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
   }
-  .harussak-drop {
+  .harussak-drop,
+  .bomi-petal {
     display: none;
   }
   html.theme-switching,

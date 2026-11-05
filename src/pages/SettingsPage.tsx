@@ -1,4 +1,4 @@
-// 설정 화면: 테마, 하루싹 한마디, 알림, 백업, 안내 (오늘 화면 오른쪽 위 ⚙️)
+// 설정 화면: 캐릭터, 테마, 캐릭터 한마디, 알림, 백업, 안내 (오늘 화면 오른쪽 위 ⚙️)
 // 화면 모드(다크 모드)는 새 디자인에서 잠시 숨겨 두었어요. 어두운 색상표를 만들면 다시 보여줄 수 있어요.
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
@@ -8,12 +8,20 @@ import { exportBackup, readBackup } from '../store/backup'
 import { formatShortDate, todayStr } from '../utils/date'
 import { BackIcon, CheckIcon } from '../components/Icons'
 import { THEMES } from '../data/themes'
+import { CHARACTERS, findCharacter } from '../data/characters'
 import { useBackClose } from '../hooks/useBackClose'
 
 interface Props {
   settings: Settings
   onChange: (patch: Partial<Settings>) => void
   onClose: () => void
+}
+
+/** 이름 뒤에 '이/가' 붙이기 (하루싹이, 봄이가): 끝 글자에 받침이 있으면 '이' */
+function withIGa(name: string): string {
+  const code = name.charCodeAt(name.length - 1) - 0xac00
+  const hasFinal = code >= 0 && code <= 11171 && code % 28 !== 0
+  return `${name}${hasFinal ? '이' : '가'}`
 }
 
 type Notice = { kind: 'ok' | 'warn'; text: string } | null
@@ -141,6 +149,54 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
           <h1 className="text-[28px] font-light tracking-tight">설정</h1>
         </header>
 
+        <Section title="캐릭터">
+          {/* 캐릭터 목록은 src/data/characters.ts 에서 관리해요. 누르면 앱 전체 캐릭터가 바로 바뀌어요 */}
+          <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="캐릭터">
+            {CHARACTERS.map((c) => {
+              const selected = settings.character === c.id
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  aria-disabled={c.locked || undefined}
+                  disabled={c.locked}
+                  aria-label={`${c.name}${c.locked ? ' (잠김)' : ''}`}
+                  onClick={() => !c.locked && onChange({ character: c.id })}
+                  className={`relative flex min-w-0 flex-col items-center gap-1 rounded-2xl border bg-card pt-2 pb-2.5 transition-colors duration-200 disabled:opacity-50 ${
+                    selected ? 'border-ink' : 'border-line'
+                  }`}
+                >
+                  {/* 활짝 핀 모습(4단계) */}
+                  <img
+                    src={c.images['4']}
+                    alt=""
+                    width={56}
+                    height={56}
+                    draggable={false}
+                    className="pointer-events-none h-14 w-14 scale-[1.3] select-none"
+                    style={{ transformOrigin: '50% 75%' }}
+                  />
+                  <span className={`truncate text-[13px] ${selected ? 'font-semibold text-ink' : 'text-muted'}`}>
+                    {c.name}
+                  </span>
+                  {selected && (
+                    <span className="absolute top-1.5 right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-sage">
+                      <CheckIcon className="h-3.5 w-3.5 text-card" />
+                    </span>
+                  )}
+                  {c.locked && (
+                    <span className="absolute top-1.5 right-1.5 text-[12px]" aria-hidden>
+                      🔒
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </Section>
+
         <Section title="테마">
           {/* 테마 목록은 src/data/themes.ts 에서 관리해요 */}
           <div className="grid grid-cols-6 gap-1" role="radiogroup" aria-label="테마">
@@ -195,8 +251,10 @@ export function SettingsPage({ settings, onChange, onClose }: Props) {
             className="flex min-h-16 w-full items-center justify-between gap-4 rounded-2xl border border-line bg-card px-5 py-4 text-left"
           >
             <span>
-              <span className="block text-base font-semibold">하루싹 한마디 보기</span>
-              <span className="mt-0.5 block text-[13px] text-muted">날짜 아래에서 하루싹이 한마디 건네요</span>
+              <span className="block text-base font-semibold">{findCharacter(settings.character).name} 한마디 보기</span>
+              <span className="mt-0.5 block text-[13px] text-muted">
+                날짜 아래에서 {withIGa(findCharacter(settings.character).name)} 한마디 건네요
+              </span>
             </span>
             <span
               className={`relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 ${

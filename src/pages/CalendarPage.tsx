@@ -3,13 +3,15 @@ import { useMemo, useRef, useState } from 'react'
 import type { PointerEvent } from 'react'
 import { useItems } from '../store/ItemsContext'
 import { formatKoreanDate, fromDateStr, monthGrid, WEEKDAYS } from '../utils/date'
-import { dayMark, harussakImg } from '../utils/harussak'
+import { dayMark } from '../utils/harussak'
+import { useCharacter } from '../hooks/useCharacter'
 import { holidayName } from '../data/holidays'
 import { QuickInput } from '../components/QuickInput'
 import { DayList } from '../components/DayList'
 
 export function CalendarPage({ today }: { today: string }) {
   const { items } = useItems()
+  const character = useCharacter() // 날짜 아래 그림·"핀 꽃/벚꽃" 문구가 캐릭터를 따라가요
   const [selected, setSelected] = useState(today)
   const [view, setView] = useState(() => {
     const d = fromDateStr(today)
@@ -98,7 +100,7 @@ export function CalendarPage({ today }: { today: string }) {
         </div>
         {/* 이번 달 핀 꽃 (손글씨) */}
         <p className="font-hand mt-0.5 text-[17px] text-muted">
-          {isThisMonth ? '이번 달' : `${view.m + 1}월에`} 핀 꽃 {flowers}송이
+          {isThisMonth ? '이번 달' : `${view.m + 1}월에`} 핀 {character.flower} {flowers}송이
         </p>
       </header>
 
@@ -153,11 +155,11 @@ export function CalendarPage({ today }: { today: string }) {
                 >
                   {d.getDate()}
                 </span>
-                {/* 날짜 아래 작은 하루싹 (20px) */}
+                {/* 날짜 아래 작은 캐릭터 (20px) */}
                 <span className="flex h-5 w-5 items-center justify-center" data-mark={mark} aria-hidden>
                   {mark !== 'none' && (
                     <img
-                      src={harussakImg(mark === 'flower' ? '4' : '1')}
+                      src={character.images[mark === 'flower' ? '4' : '1']}
                       alt=""
                       width={20}
                       height={20}

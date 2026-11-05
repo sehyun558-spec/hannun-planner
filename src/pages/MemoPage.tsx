@@ -7,11 +7,12 @@ import { SearchBox } from '../components/SearchBox'
 import { MemoCard } from '../components/MemoCard'
 import { EditSheet } from '../components/EditSheet'
 import { PlusIcon } from '../components/Icons'
-import { harussakImg } from '../utils/harussak'
+import { useCharacter } from '../hooks/useCharacter'
 
 export function MemoPage({ today }: { today: string }) {
   const { items, addItem, updateItem, requestDelete, toggleStar } = useItems()
   const [query, setQuery] = useState('')
+  const character = useCharacter()
   const [editing, setEditing] = useState<{ item: Item; isNew: boolean } | null>(null)
 
   const allMemos = useMemo(() => items.filter((it) => it.kind === 'memo'), [items])
@@ -56,10 +57,10 @@ export function MemoPage({ today }: { today: string }) {
 
       {memos.length === 0 ? (
         <div className="py-14 text-center">
-          {/* 메모가 하나도 없을 때: 연필 든 하루싹 */}
+          {/* 메모가 하나도 없을 때: 연필 든 캐릭터 */}
           {!query && (
             <img
-              src={harussakImg('pencil')}
+              src={character.images.pencil}
               alt=""
               width={120}
               height={120}

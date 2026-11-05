@@ -1,10 +1,11 @@
-// "오늘 꼭 할 한 가지" 칸 오른쪽의 작은 하루싹 (48px)
+// "오늘 꼭 할 한 가지" 칸 오른쪽의 작은 캐릭터 (48px, 하루싹·봄이)
 // - 할 일이 올라오면 아래에서 쏙 올라와요 (할 일이 바뀌면 다시 쏙)
 // - 그 할 일을 완료하면 꽃(4)으로 바뀌며 통 튀어요, 완료를 취소하면 다시 새싹(1)
 import { useEffect, useRef, useState } from 'react'
-import { harussakImg } from '../utils/harussak'
+import { useCharacter } from '../hooks/useCharacter'
 
 export function FocusSprout({ done }: { done: boolean }) {
+  const character = useCharacter()
   const [bounce, setBounce] = useState(0)
   const prev = useRef(done)
   useEffect(() => {
@@ -18,7 +19,7 @@ export function FocusSprout({ done }: { done: boolean }) {
       <span className="harussak-pop absolute inset-0 block">
         <span key={bounce} className={`block h-full w-full ${bounce ? 'harussak-bounce' : ''}`} style={{ transformOrigin: '50% 85%' }}>
           <img
-            src={harussakImg(done ? '4' : '1')}
+            src={character.images[done ? '4' : '1']}
             alt=""
             width={48}
             height={48}

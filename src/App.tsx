@@ -20,6 +20,8 @@ import { useDayPart } from './hooks/useDayPart'
 import { useColorTheme } from './hooks/useColorTheme'
 import { useWelcomeBack } from './hooks/useHarussakTime'
 import { todayStr } from './utils/date'
+import { CharacterContext } from './hooks/useCharacter'
+import { findCharacter } from './data/characters'
 
 type Overlay = 'search' | 'settings' | null
 
@@ -35,7 +37,7 @@ function Shell() {
   useTheme('light')
   useColorTheme(settings.colorTheme) // 설정에서 고른 색 테마
   useDayPart()
-  const { welcome, done: welcomed } = useWelcomeBack() // 3일 이상 만에 오면 하루싹이 반겨요
+  const { welcome, done: welcomed } = useWelcomeBack() // 3일 이상 만에 오면 캐릭터가 반겨요
   useReminders(items, settings.notify, (it) => setReminders((prev) => [...prev, it]))
   const closeReminders = useCallback(() => setReminders([]), [])
   const closeOverlay = useCallback(() => setOverlay(null), [])
@@ -52,50 +54,53 @@ function Shell() {
   }
 
   return (
-    <div className="min-h-dvh bg-paper text-ink">
-      {/* 검색·설정 화면이 열려 있으면 뒤 화면은 눌리지 않게 */}
-      <div inert={overlay !== null}>
-        <main
-          className="mx-auto max-w-md px-5"
-          style={{
-            paddingTop: 'calc(env(safe-area-inset-top) + 0.75rem)',
-            paddingBottom: 'calc(env(safe-area-inset-bottom) + 6rem)',
-          }}
-        >
-          {saveFailed && (
-            <p className="mt-3 rounded-2xl border border-ink bg-card p-4 text-[15px] text-ink">
-              저장 공간이 부족해서 저장하지 못했어요. 설정에서 백업을 받아 두세요.
-            </p>
-          )}
-          {/* 탭을 바꿀 때 살며시 나타나요 */}
-          <div key={tab} className="tab-in">
-            {tab === 'today' && (
-              <TodayPage
-                today={today}
-                onSearch={() => setOverlay('search')}
-                onSettings={() => setOverlay('settings')}
-                lastBackup={settings.lastBackup}
-                showQuote={settings.showQuote}
-                welcome={welcome}
-                onWelcomed={welcomed}
-                onBackedUp={() => updateSettings({ lastBackup: todayStr() })}
-              />
+    // 고른 캐릭터를 앱 전체에 알려줘요 (오늘 화면·달력·메모·못 한 일 카드가 같이 바뀌어요)
+    <CharacterContext.Provider value={findCharacter(settings.character)}>
+      <div className="min-h-dvh bg-paper text-ink">
+        {/* 검색·설정 화면이 열려 있으면 뒤 화면은 눌리지 않게 */}
+        <div inert={overlay !== null}>
+          <main
+            className="mx-auto max-w-md px-5"
+            style={{
+              paddingTop: 'calc(env(safe-area-inset-top) + 0.75rem)',
+              paddingBottom: 'calc(env(safe-area-inset-bottom) + 6rem)',
+            }}
+          >
+            {saveFailed && (
+              <p className="mt-3 rounded-2xl border border-ink bg-card p-4 text-[15px] text-ink">
+                저장 공간이 부족해서 저장하지 못했어요. 설정에서 백업을 받아 두세요.
+              </p>
             )}
-            {tab === 'calendar' && <CalendarPage today={today} />}
-            {tab === 'memo' && <MemoPage today={today} />}
-          </div>
-        </main>
-        <BottomTabs tab={tab} onChange={changeTab} />
-      </div>
+            {/* 탭을 바꿀 때 살며시 나타나요 */}
+            <div key={tab} className="tab-in">
+              {tab === 'today' && (
+                <TodayPage
+                  today={today}
+                  onSearch={() => setOverlay('search')}
+                  onSettings={() => setOverlay('settings')}
+                  lastBackup={settings.lastBackup}
+                  showQuote={settings.showQuote}
+                  welcome={welcome}
+                  onWelcomed={welcomed}
+                  onBackedUp={() => updateSettings({ lastBackup: todayStr() })}
+                />
+              )}
+              {tab === 'calendar' && <CalendarPage today={today} />}
+              {tab === 'memo' && <MemoPage today={today} />}
+            </div>
+          </main>
+          <BottomTabs tab={tab} onChange={changeTab} />
+        </div>
 
-      {overlay === 'search' && <SearchPage onClose={closeOverlay} />}
-      {overlay === 'settings' && (
-        <SettingsPage settings={settings} onChange={updateSettings} onClose={closeOverlay} />
-      )}
-      <UndoToast />
-      <RepeatDeleteSheet />
-      <ReminderBanner items={reminders} onClose={closeReminders} />
-    </div>
+        {overlay === 'search' && <SearchPage onClose={closeOverlay} />}
+        {overlay === 'settings' && (
+          <SettingsPage settings={settings} onChange={updateSettings} onClose={closeOverlay} />
+        )}
+        <UndoToast />
+        <RepeatDeleteSheet />
+        <ReminderBanner items={reminders} onClose={closeReminders} />
+      </div>
+    </CharacterContext.Provider>
   )
 }
 

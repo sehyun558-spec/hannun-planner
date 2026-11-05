@@ -89,9 +89,19 @@
     기록 없음·하나도 못 끝냄·**오늘 이후 날짜** → 표시 없음(사용자 결정). 날짜를 누르면 목록은 그대로
   - (v1.6) 달력 제목 아래 손글씨 "이번 달 핀 꽃 N송이"(다른 달을 보면 "10월에 핀 꽃 N송이", 그 달 날짜만 셈)
   - 그림 8장은 앱이 켜질 때 미리 불러옴(깜빡임 방지), PWA 오프라인 보관에도 포함
-  - 말풍선·한마디·못 한 일 카드 문구만 손글씨체 `font-hand` = Gaegu(OFL). **대사에 쓰는 글자가 든 조각 10개만** `public/fonts/gaegu/`에 있음.
+  - 말풍선·한마디·못 한 일 카드 문구만 손글씨체 `font-hand` = Gaegu(OFL). **대사에 쓰는 글자가 든 조각 11개만** `public/fonts/gaegu/`에 있음(v1.9 봄이 '폈' 때문에 100번 조각 추가).
     대사를 바꿔 새 글자가 생기면 @fontsource/gaegu 의 400.css 에서 해당 조각을 찾아 파일과 @font-face(unicode-range)를 추가할 것
   - 동작 줄이기면 튀기·흔들기 끔, 물방울은 숨김
+- **캐릭터 고르기 (v1.9)**: 목록은 `src/data/characters.ts` **한 곳**(id=그림 파일 앞부분, name, images 8장, effect, flower, lines, locked). 테마와 같은 방식
+  - 하루싹(기본, 'harussak') / 봄이('bomi', 벚꽃). 저장: settings.character (예전 설정엔 없음 → 하루싹, `findCharacter`)
+  - App 이 `CharacterContext` 로 알려 주고, 각 화면은 `useCharacter()` — Harussak(오늘 화면, 이름은 그대로), FocusSprout, CarryOverBar, MemoPage, CalendarPage
+  - 성장 단계 계산(`harussakStage`)·달력 표시(`dayMark`)는 공통(utils/harussak.ts). 대사·그림만 캐릭터별
+  - 체크 효과: 하루싹 물방울 / 봄이 벚꽃잎 `.bomi-petal`(SVG, `--petal` #F6C3CF 봄이 전용 예외 색, 0.75초 팔랑, 동작 줄이기면 숨김)
+  - 봄이 대사: 오늘 하나씩 피워볼까? / 조금씩 피고 있어 / 활짝 폈다! / 밤 "이제 꽃잎 접고 자자" / 간지럼 간지러워!·꽃잎 떨어진다~·천천히 피어도 돼·봄바람 같아 / "왔구나!" / 카드 "어제(지난) 거 내가 담아왔어. 오늘로 가져올까?"
+  - 달력 문구 "이번 달 핀 {flower} N송이" (하루싹 꽃, 봄이 벚꽃)
+  - 설정 맨 위 "캐릭터"(테마 위): 3열 카드(4단계 그림 + 이름, 고르면 테두리 + 세이지 ✓, locked 면 🔒). "○○ 한마디 보기" 이름도 캐릭터 따라 (이/가 자동)
+  - 모든 캐릭터 그림을 앱 시작 때 미리 불러옴(characters.ts 아래쪽)
+  - **봄이 간지러워(bomi-tickle.png) 그림이 아직 없음** → 지금은 bomi-4 로 대신(`images('bomi', { tickle: '4' })`). 파일을 넣으면 `{ tickle: '4' }` 만 지우기
 - 모서리: 카드 16px(rounded-2xl), 버튼 12px(rounded-xl). 누르는 곳 최소 44px
 - 애니메이션 0.2~0.4초, `prefers-reduced-motion`이면 끔
 - 특색: 오늘의 한 가지(별 붙인 오늘 할 일 중 첫 번째), 원형 진행 표시 + "오늘도 잘 해냈어요", 체크 펜 긋기·줄 긋기(`.check-path`, `.strike`), 짧은 진동(`haptic`), 다정한 빈 화면 문구
@@ -125,7 +135,7 @@
 - 확인: `npm run dev` 실행 후 Playwright(폰 크기 390×844)로 스크린샷·동작 점검, `npm run build`로 오류 검사
 
 ## 설계 메모 (이미 정한 것)
-- 설정: `src/store/settings.ts` (theme=다크모드용, notify, lastBackup, showQuote, colorTheme) — localStorage `hannun-planner:settings`
+- 설정: `src/store/settings.ts` (theme=다크모드용, notify, lastBackup, showQuote, colorTheme, character) — localStorage `hannun-planner:settings`
 - 백업 불러오기는 **덮어쓰기가 아니라 합치기**(같은 id면 updatedAt이 더 최근인 쪽). 데이터를 잃지 않게.
 - 백업 파일 이름은 영어(`hannun-planner-backup-YYYY-MM-DD.json`) — 한글 이름은 일부 브라우저에서 "download"로 바뀜
 - 알림: `useReminders`가 15초마다 확인, 시간 지나고 5분 안이면 알림. 이미 보낸 알림은 `hannun-planner:notified`에 기록.
@@ -178,3 +188,4 @@
 - [x] 테마 고르기 6종(세이지·쑥·벚꽃·하늘·밀크티·라벤더) (v1.7.0)
 - [x] 달력 빨간날(일요일·공휴일 빨강, 토요일 파랑, 공휴일 이름) (v1.8.0)
 - [x] 매끈하게 다듬기: 수정 창 탭 비침 고침, 뒤로가기로 창 닫기, 끝낸 일 아래로, 접히는 삭제, 달 넘기기·탭 전환 움직임 (v1.8.1)
+- [x] 캐릭터 고르기: 하루싹 / 봄이(벚꽃잎 효과, 봄이 대사) (v1.9.0) — 봄이 간지러워 그림은 받으면 추가

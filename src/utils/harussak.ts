@@ -1,4 +1,4 @@
-// 하루싹 계산: 오늘 완료 비율 → 성장 단계와 한마디, 달력 날짜 표시
+// 캐릭터 계산 (하루싹·봄이 공통): 오늘 완료 비율 → 성장 단계, 달력 날짜 표시
 import type { Item } from '../types'
 import { isDoneOn, occursOn } from './items'
 
@@ -9,17 +9,7 @@ export function harussakStage(done: number, total: number): number {
   return done / total < 0.5 ? 1 : 2
 }
 
-/** 날짜 아래 하루싹 한마디 */
-export function harussakLine(done: number, total: number): string {
-  if (total > 0 && done >= total) return '꽃 피었다!'
-  if (done > 0) return '잘 하고 있어'
-  return '오늘 하나만 같이 해볼까?'
-}
-
-/** 하루싹 그림 주소 (예: harussakImg('1'), harussakImg('sleepy')) */
-export function harussakImg(name: '1' | '2' | '3' | '4' | 'sleepy' | 'tickle' | 'pencil' | 'basket'): string {
-  return `${import.meta.env.BASE_URL}images/harussak-${name}.png`
-}
+// 캐릭터마다 다른 것(그림 주소, 한마디)은 src/data/characters.ts 에 있어요.
 
 /**
  * 달력 날짜 표시: 'flower'(그날 할 일을 전부 끝냄) / 'sprout'(일부만) / 'none'(표시 없음)
