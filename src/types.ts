@@ -16,6 +16,8 @@ export interface Item {
   date: string
   /** 시간 'HH:MM' (없으면 null) */
   time: string | null
+  /** 끝나는 시간 'HH:MM' (v1.10 새 칸). 없으면(예전 항목) 화면에서만 "시작 + 1시간"으로 보여요 */
+  endTime: string | null
   /** 완료 여부 (반복 안 하는 항목용) */
   done: boolean
   /** 반복 항목에서 완료한 날짜들 */

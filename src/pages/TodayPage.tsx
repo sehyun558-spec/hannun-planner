@@ -1,11 +1,13 @@
 // 오늘 화면: 오늘의 한 가지 + 진행 표시 + 빠른 입력 + 오늘 목록
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { Item } from '../types'
+import type { Item, ItemKind } from '../types'
 import { useItems } from '../store/ItemsContext'
-import { formatKoreanDate, formatKoreanTime } from '../utils/date'
+import { formatKoreanDate } from '../utils/date'
+import { itemTimeText } from '../utils/time'
 import { isDoneOn, occursOn, sortItems } from '../utils/items'
 import { QuickInput } from '../components/QuickInput'
 import { DayList } from '../components/DayList'
+import { TimeTable } from '../components/TimeTable'
 import { EditSheet } from '../components/EditSheet'
 import { CheckCircle } from '../components/CheckCircle'
 import { Harussak } from '../components/Harussak'
@@ -38,6 +40,8 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
   const { items, toggleDone, toggleStar, updateItem, requestDelete } = useItems()
   const [editing, setEditing] = useState<Item | null>(null)
   const [cheer, setCheer] = useState(false)
+  // 입력 종류 [할 일]/[일정]/[메모]. [일정]을 고르면 아래 목록 자리에 시간표가 보여요
+  const [kind, setKind] = useState<ItemKind>('todo')
 
   // 오늘 체크할 수 있는 항목(할 일·일정)
   const checkable = useMemo(
@@ -121,7 +125,7 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
                   <span className={`strike ${focusDone ? 'is-done' : ''}`}>{focus.title}</span>
                 </span>
                 {focus.time && (
-                  <span className="mt-1 block text-[13px] text-muted">{formatKoreanTime(focus.time)}</span>
+                  <span className="mt-1 block text-[13px] text-muted">{itemTimeText(focus)}</span>
                 )}
               </button>
               {/* 작은 하루싹: 할 일이 올라오면 쏙, 완료하면 꽃 */}
@@ -143,14 +147,18 @@ export function TodayPage({ today, onSearch, onSettings, lastBackup, onBackedUp,
         </section>
       )}
 
-      <QuickInput date={today} />
+      <QuickInput date={today} kind={kind} onKindChange={setKind} />
 
-      <DayList
-        day={today}
-        excludeId={focus?.id}
-        emptyText={hasAnything ? '' : '오늘은 여유로운 날이에요'}
-        emptySub={hasAnything ? undefined : '떠오르는 일이 있으면 위에 적어 보세요'}
-      />
+      {kind === 'event' ? (
+        <TimeTable day={today} isToday onEdit={setEditing} />
+      ) : (
+        <DayList
+          day={today}
+          excludeId={focus?.id}
+          emptyText={hasAnything ? '' : '오늘은 여유로운 날이에요'}
+          emptySub={hasAnything ? undefined : '떠오르는 일이 있으면 위에 적어 보세요'}
+        />
+      )}
 
       {/* 오래 백업하지 않았으면 맨 아래에 조용히 한 줄 */}
       <BackupNudge today={today} lastBackup={lastBackup} onBackedUp={onBackedUp} />

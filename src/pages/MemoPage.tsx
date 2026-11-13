@@ -36,6 +36,7 @@ export function MemoPage({ today }: { today: string }) {
         content: '',
         date: today,
         time: null,
+        endTime: null,
         done: false,
         doneDates: [],
         starred: false,

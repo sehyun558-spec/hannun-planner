@@ -10,9 +10,9 @@ import { newId } from '../utils/items'
 
 export type NewItem = Omit<
   Item,
-  'id' | 'createdAt' | 'updatedAt' | 'done' | 'doneDates' | 'skipDates' | 'endDate'
+  'id' | 'createdAt' | 'updatedAt' | 'done' | 'doneDates' | 'skipDates' | 'endDate' | 'endTime'
 > &
-  Partial<Pick<Item, 'done' | 'doneDates' | 'skipDates' | 'endDate'>>
+  Partial<Pick<Item, 'done' | 'doneDates' | 'skipDates' | 'endDate' | 'endTime'>>
 
 /** 되돌리기용으로 기억해 두는 "방금 한 일" */
 type LastAction =
@@ -82,6 +82,7 @@ export function ItemsProvider({ children }: { children: ReactNode }) {
       doneDates: [],
       skipDates: [],
       endDate: null,
+      endTime: null,
       ...data,
       id: newId(),
       createdAt: now,

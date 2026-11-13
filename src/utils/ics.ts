@@ -1,6 +1,7 @@
 // 휴대폰 캘린더에 추가: 캘린더 앱들이 공통으로 알아듣는 .ics 파일을 만들어요.
 // 파일은 이 기기 안에서만 만들어지고, 어떤 서버로도 보내지지 않아요.
 import type { Item } from '../types'
+import { itemDuration } from './time'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
@@ -9,11 +10,11 @@ function localStamp(date: string, time: string): string {
   return `${date.replace(/-/g, '')}T${time.replace(':', '')}00`
 }
 
-/** 1시간 뒤 날짜·시각 (자정을 넘어가면 다음 날로) */
-function plusOneHour(date: string, time: string): string {
+/** 시작에서 minutes 분 뒤 날짜·시각 (자정을 넘어가면 다음 날로) */
+function plusMinutes(date: string, time: string, minutes: number): string {
   const [y, m, d] = date.split('-').map(Number)
   const [h, mi] = time.split(':').map(Number)
-  const t = new Date(y, m - 1, d, h + 1, mi)
+  const t = new Date(y, m - 1, d, h, mi + minutes)
   return `${t.getFullYear()}${pad(t.getMonth() + 1)}${pad(t.getDate())}T${pad(t.getHours())}${pad(t.getMinutes())}00`
 }
 
@@ -50,7 +51,7 @@ function fold(line: string): string {
 
 const RRULE_FREQ = { daily: 'DAILY', weekly: 'WEEKLY', monthly: 'MONTHLY' } as const
 
-/** 시간이 있는 항목 → .ics 글 (일정 길이 1시간, 10분 전 알림, 반복·끝나는 날·건너뛴 날 포함) */
+/** 시간이 있는 항목 → .ics 글 (끝나는 시간까지, 없으면 1시간, 10분 전 알림, 반복·끝나는 날·건너뛴 날 포함) */
 export function buildIcs(item: Item): string {
   if (!item.time) throw new Error('시간이 있는 항목만 캘린더에 추가할 수 있어요')
   const lines = [
@@ -63,7 +64,7 @@ export function buildIcs(item: Item): string {
     `UID:${item.id}@hannun-planner`,
     `DTSTAMP:${utcNow()}`,
     `DTSTART:${localStamp(item.date, item.time)}`,
-    `DTEND:${plusOneHour(item.date, item.time)}`,
+    `DTEND:${plusMinutes(item.date, item.time, itemDuration(item))}`, // 끝나는 시간 (예전 항목은 1시간)
     `SUMMARY:${esc(item.title)}`,
   ]
   if (item.content.trim()) lines.push(`DESCRIPTION:${esc(item.content.trim())}`)

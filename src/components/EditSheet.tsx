@@ -10,6 +10,8 @@ import { useDragToClose } from '../hooks/useDragToClose'
 import { useBackClose } from '../hooks/useBackClose'
 import { useScrollLock } from '../hooks/useScrollLock'
 import { PickerField } from './PickerField'
+import { DurationPicker } from './DurationPicker'
+import { addMinutes, durationBetween, effectiveEnd } from '../utils/time'
 import { openInCalendar } from '../utils/ics'
 
 /** '매주 월요일마다', '매달 2일에', '11월 2일부터 매일' (끝나는 날이 있으면 '…까지' 를 붙여요) */
@@ -72,6 +74,8 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
       ...draft,
       title: title || draft.content.trim().split('\n')[0].slice(0, 40),
       time: draft.kind === 'memo' ? null : draft.time || null,
+      // 끝나는 시간: 시간이 있을 때만. 예전 항목에서 길이를 안 건드렸으면 null 그대로(화면에선 1시간)
+      endTime: draft.kind === 'memo' || !draft.time ? null : draft.endTime,
       repeat: draft.kind === 'memo' ? 'none' : draft.repeat,
       // 끝나는 날은 반복할 때만, 그리고 시작 날짜보다 앞이면 무시해요
       endDate:
@@ -158,7 +162,7 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
                 {draft.time && (
                   <button
                     type="button"
-                    onClick={() => set({ time: null })}
+                    onClick={() => set({ time: null, endTime: null })}
                     className="-my-3 -mr-1 px-1 py-3 text-ink underline underline-offset-2"
                   >
                     지우기
@@ -169,12 +173,31 @@ export function EditSheet({ item, isNew, onSave, onDelete, onClose }: Props) {
                 type="time"
                 label="시간"
                 value={draft.time ?? ''}
-                onChange={(v) => set({ time: v || null })}
+                onChange={(v) =>
+                  set({
+                    time: v || null,
+                    // 시작을 옮기면 길이는 그대로 두고 끝도 같이 옮겨요
+                    endTime:
+                      v && draft.time && draft.endTime
+                        ? addMinutes(v, durationBetween(draft.time, draft.endTime))
+                        : v
+                          ? draft.endTime
+                          : null,
+                  })
+                }
                 display={draft.time ? formatKoreanTime(draft.time) : '시간 없음'}
               />
             </div>
           )}
         </div>
+
+        {/* 길이: 시작 시간을 정했을 때만 [30분] [1시간] [2시간] [직접] */}
+        {draft.kind !== 'memo' && draft.time && (
+          <div className="-mt-2">
+            <span className={label}>길이</span>
+            <DurationPicker start={draft.time} end={effectiveEnd(draft)!} onChange={(end) => set({ endTime: end })} />
+          </div>
+        )}
 
         {draft.kind !== 'memo' && (
           <div>

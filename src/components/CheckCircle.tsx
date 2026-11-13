@@ -5,12 +5,13 @@ import { haptic } from '../utils/haptic'
 interface Props {
   done: boolean
   onClick: (e: MouseEvent) => void
-  /** 'lg' 는 "오늘의 한 가지"용 큰 동그라미 */
-  size?: 'md' | 'lg'
+  /** 'lg' 는 "오늘의 한 가지"용 큰 동그라미, 'sm' 은 시간표 블록용 작은 동그라미 */
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export function CheckCircle({ done, onClick, size = 'md' }: Props) {
-  const box = size === 'lg' ? 'h-8 w-8' : 'h-6 w-6'
+  const box = size === 'lg' ? 'h-8 w-8' : size === 'sm' ? 'h-5 w-5' : 'h-6 w-6'
+  const hit = size === 'lg' ? 'h-14 w-14' : size === 'sm' ? 'h-9 w-9' : 'h-12 w-12'
   return (
     <button
       type="button"
@@ -20,7 +21,7 @@ export function CheckCircle({ done, onClick, size = 'md' }: Props) {
       }}
       aria-label={done ? '완료 취소' : '완료하기'}
       aria-pressed={done}
-      className={`flex shrink-0 items-center justify-center ${size === 'lg' ? 'h-14 w-14' : 'h-12 w-12'}`}
+      className={`flex shrink-0 items-center justify-center ${hit}`}
     >
       <span
         className={`flex ${box} items-center justify-center rounded-full border-[1.5px] transition-colors duration-200 ${

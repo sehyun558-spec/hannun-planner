@@ -2,6 +2,7 @@
 // 데이터는 이 기기 밖으로 절대 나가지 않아요.
 import type { Item } from '../types'
 import { todayStr } from '../utils/date'
+import { isTimeStr } from '../utils/time'
 
 const KEY = 'hannun-planner:v1'
 
@@ -21,6 +22,8 @@ export function normalizeItem(raw: Partial<Item>): Item | null {
     content: typeof raw.content === 'string' ? raw.content : '',
     date: typeof raw.date === 'string' ? raw.date : todayStr(),
     time: typeof raw.time === 'string' && raw.time ? raw.time : null,
+    // 예전 항목엔 이 칸이 없어요 → null 로 두고, 화면에서만 시작 + 1시간으로 계산해요 (값을 지어내 저장하지 않아요)
+    endTime: typeof raw.time === 'string' && raw.time && isTimeStr(raw.endTime) ? raw.endTime : null,
     done: !!raw.done,
     doneDates: Array.isArray(raw.doneDates) ? raw.doneDates : [],
     starred: !!raw.starred,
